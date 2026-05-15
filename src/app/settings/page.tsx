@@ -28,6 +28,9 @@ export default function SettingsPage() {
   const [baseUrl, setBaseUrl] = useState("");
   const [model, setModel] = useState("");
   const [language, setLanguage] = useState<Language>("en");
+  const [initialLanguage, setInitialLanguage] = useState<Language>("en");
+  const [savingLang, setSavingLang] = useState(false);
+  const [savedLang, setSavedLang] = useState(false);
   const [showKey, setShowKey] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"success" | "fail" | null>(null);
@@ -48,6 +51,7 @@ export default function SettingsPage() {
       setBaseUrl(settings.baseUrl || "");
       setModel(settings.model || "");
       setLanguage(settings.language || "en");
+      setInitialLanguage(settings.language || "en");
     } else {
       // Set defaults for initial provider
       const defaults = getProviderDefaults("deepseek");
@@ -61,6 +65,22 @@ export default function SettingsPage() {
     const defaults = getProviderDefaults(p);
     setBaseUrl(defaults.baseUrl);
     setModel(defaults.model);
+  };
+
+  const handleSaveLanguage = () => {
+    const settings = getSettings();
+    const merged = { ...settings, language } as UserSettings;
+    saveSettings(merged);
+    if (language !== initialLanguage) {
+      window.location.reload();
+    } else {
+      setSavingLang(true);
+      setSavedLang(true);
+      setTimeout(() => {
+        setSavingLang(false);
+        setTimeout(() => setSavedLang(false), 1500);
+      }, 300);
+    }
   };
 
   const handleTestConnection = async () => {
@@ -90,12 +110,13 @@ export default function SettingsPage() {
   };
 
   const handleSave = () => {
+    const existing = getSettings();
     const settings: UserSettings = {
       provider,
       apiKey: apiKey.trim(),
       baseUrl: baseUrl.trim(),
       model: model.trim(),
-      language,
+      language: existing?.language || "en",
     };
     saveSettings(settings);
     setSaving(true);
@@ -178,7 +199,10 @@ export default function SettingsPage() {
           </label>
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value as Language)}
+            onChange={(e) => {
+              setLanguage(e.target.value as Language);
+              setSavedLang(false);
+            }}
             className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
           >
             <option value="en">{t("English")}</option>
@@ -194,6 +218,17 @@ export default function SettingsPage() {
               切换界面语言、日期格式及 AI 回复语言。
             </p>
           )}
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleSaveLanguage}
+            className="flex items-center gap-2 px-5 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
+          >
+            {savingLang || savedLang ? (
+              <CheckCircle2 size={16} />
+            ) : null}
+            {savedLang ? t("Language saved") : t("Save Language")}
+          </button>
         </div>
       </div>
 

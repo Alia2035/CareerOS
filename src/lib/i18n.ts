@@ -41,6 +41,8 @@ const translations: TranslationMap = {
   "Model Name": { en: "Model Name", zh: "模型名称" },
   "Save": { en: "Save", zh: "保存" },
   "Saved!": { en: "Saved!", zh: "已保存！" },
+  "Save Language": { en: "Save Language", zh: "保存语言" },
+  "Language saved": { en: "Language saved", zh: "语言已保存" },
   "Clear": { en: "Clear", zh: "清除" },
   "Test Connection": { en: "Test Connection", zh: "测试连接" },
   "Testing...": { en: "Testing...", zh: "测试中..." },
