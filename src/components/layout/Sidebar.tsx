@@ -13,6 +13,7 @@ import {
   Settings,
   Menu,
   X,
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -97,7 +98,16 @@ export default function Sidebar() {
         </nav>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-gray-100">
+        <div className="px-5 py-4 border-t border-gray-100 space-y-2">
+          <a
+            href="https://forms.gle/87oStdgkMianryiaA"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <ExternalLink size={12} />
+            Give Feedback
+          </a>
           <p className="text-xs text-gray-400">CareerOS v0.1</p>
         </div>
       </aside>
