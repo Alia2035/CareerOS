@@ -10,6 +10,8 @@ export interface Job {
   appliedDate: string;
   followUpDate: string | null;
   deadlineDate: string;
+  interviewDate: string;
+  interviewTime: string;
   salary: string;
   jobUrl: string;
   jobDescription: string;

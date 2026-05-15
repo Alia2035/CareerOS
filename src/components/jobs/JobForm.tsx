@@ -33,6 +33,8 @@ export default function JobForm({ job, onClose }: Props) {
     source: job?.source || "",
     followUpDate: job?.followUpDate || "",
     deadlineDate: job?.deadlineDate || "",
+    interviewDate: job?.interviewDate || "",
+    interviewTime: job?.interviewTime || "",
     resumeText: job?.resumeText || "",
     resumeFileName: job?.resumeFileName || "",
     atsScore: job?.atsScore ?? null,
@@ -176,6 +178,27 @@ export default function JobForm({ job, onClose }: Props) {
                 type="date"
                 value={form.deadlineDate}
                 onChange={(e) => setForm((f) => ({ ...f, deadlineDate: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
+              />
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Interview Date</label>
+              <input
+                type="date"
+                value={form.interviewDate}
+                onChange={(e) => setForm((f) => ({ ...f, interviewDate: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Interview Time</label>
+              <input
+                type="time"
+                value={form.interviewTime}
+                onChange={(e) => setForm((f) => ({ ...f, interviewTime: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
               />
             </div>

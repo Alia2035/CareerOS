@@ -5,6 +5,7 @@ import { useStore, calcStats } from "@/lib/store";
 import StatCard from "@/components/dashboard/StatCard";
 import RecentApps from "@/components/dashboard/RecentApps";
 import FollowUpList from "@/components/dashboard/FollowUpList";
+import UpcomingInterviews from "@/components/dashboard/UpcomingInterviews";
 import { Briefcase, Send, Users, Trophy, XCircle } from "lucide-react";
 
 export default function DashboardPage() {
@@ -38,6 +39,8 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      <UpcomingInterviews />
 
       <div className="grid lg:grid-cols-2 gap-6">
         <RecentApps />

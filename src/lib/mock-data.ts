@@ -16,6 +16,8 @@ const emptyJobDefaults = {
   deadlineDate: "",
   resumeText: "",
   resumeFileName: "",
+  interviewDate: "",
+  interviewTime: "",
   atsScore: null as number | null,
   matchedKeywords: [] as string[],
   missingKeywords: [] as string[],
