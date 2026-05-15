@@ -8,7 +8,8 @@ import {
   getProviderDefaults,
   type UserSettings,
 } from "@/lib/settingsStore";
-import { Loader2, CheckCircle2, XCircle, Eye, EyeOff, Shield, Trash2 } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Eye, EyeOff, Shield, Trash2, Download, Upload, AlertCircle } from "lucide-react";
+import { downloadBackup, importBackup } from "@/lib/dataBackup";
 
 type Provider = "deepseek" | "openai" | "other";
 
@@ -28,6 +29,11 @@ export default function SettingsPage() {
   const [testResult, setTestResult] = useState<"success" | "fail" | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  const [importError, setImportError] = useState("");
+  const [importSuccess, setImportSuccess] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   // Load saved settings on mount
   useEffect(() => {
@@ -100,6 +106,48 @@ export default function SettingsPage() {
     setBaseUrl("");
     setModel("");
     setTestResult(null);
+  };
+
+  const handleExport = () => {
+    downloadBackup();
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImportError("");
+    setImportSuccess(false);
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPendingFile(file);
+    setShowConfirm(true);
+    // Reset input so the same file can be re-selected
+    e.target.value = "";
+  };
+
+  const handleConfirmImport = () => {
+    if (!pendingFile) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = importBackup(reader.result as string);
+      if (result.success) {
+        setImportSuccess(true);
+        setImportError("");
+        window.location.reload();
+      } else {
+        setImportError(result.error || "Import failed.");
+        setImportSuccess(false);
+      }
+    };
+    reader.onerror = () => {
+      setImportError("Failed to read file.");
+    };
+    reader.readAsText(pendingFile);
+    setShowConfirm(false);
+    setPendingFile(null);
+  };
+
+  const handleCancelImport = () => {
+    setShowConfirm(false);
+    setPendingFile(null);
   };
 
   return (
@@ -250,6 +298,75 @@ export default function SettingsPage() {
           </button>
         </div>
       </div>
+
+      {/* Data Backup */}
+      <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
+        <h2 className="text-base font-semibold text-gray-900">Data Backup</h2>
+        <p className="text-sm text-gray-500">
+          Export your data (jobs, resumes, analyses, AI-generated content) as a JSON file.
+          Use this to back up your data or move it to another device.
+        </p>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <Download size={16} />
+            Export Data
+          </button>
+
+          <label className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
+            <Upload size={16} />
+            Import Data
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+          </label>
+        </div>
+
+        {importError && (
+          <div className="flex items-center gap-2 text-sm text-red-600">
+            <AlertCircle size={14} />
+            {importError}
+          </div>
+        )}
+        {importSuccess && (
+          <div className="flex items-center gap-2 text-sm text-green-600">
+            <CheckCircle2 size={14} />
+            Data imported successfully. Refreshing...
+          </div>
+        )}
+      </div>
+
+      {/* Import Confirmation Dialog */}
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full mx-4 space-y-4">
+            <h3 className="text-sm font-semibold text-gray-900">Confirm Import</h3>
+            <p className="text-sm text-gray-600">
+              Importing will overwrite your current data with the contents of the backup file. This cannot be undone. Continue?
+            </p>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={handleCancelImport}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmImport}
+                className="px-4 py-2 text-sm font-medium bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+              >
+                Import
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
