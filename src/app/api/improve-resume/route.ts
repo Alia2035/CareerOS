@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
     const content = await chat(
       [
-        { role: "system", content: "You are an expert resume writer. Always respond with the improved resume text only, no explanations." },
+        { role: "system", content: "You are an expert resume writer. Always respond with the improved resume text only, no explanations. Always respond in the same language as the user's input." },
         { role: "user", content: prompt },
       ],
       { apiKey, baseUrl, model },

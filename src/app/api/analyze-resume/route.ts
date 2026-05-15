@@ -37,7 +37,7 @@ Return JSON in this exact format:
 
     const content = await chat(
       [
-        { role: "system", content: "You are an expert ATS analyzer. Always respond with valid JSON only, no markdown." },
+        { role: "system", content: "You are an expert ATS analyzer. Always respond with valid JSON only, no markdown. Always respond in the same language as the user's input." },
         { role: "user", content: prompt },
       ],
       { apiKey, baseUrl, model },

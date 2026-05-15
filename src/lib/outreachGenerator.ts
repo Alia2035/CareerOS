@@ -51,7 +51,7 @@ export function buildOutreachPrompt(
 function buildColdEmailPrompt(ctx: OutreachContext): OutreachPrompt {
   const keywordHints = buildKeywordHints(ctx);
   return {
-    system: `You are a professional job seeker writing a cold outreach email. Write in a natural, human tone — warm but professional. Do NOT copy-paste bullet points from the resume or job description. Synthesize the candidate's background and connect it naturally to the role. Keep the email between 150–200 words. Use a genuine, conversational style as if you were a real person emailing the hiring team.`,
+    system: `You are a professional job seeker writing a cold outreach email. Write in a natural, human tone — warm but professional. Do NOT copy-paste bullet points from the resume or job description. Synthesize the candidate's background and connect it naturally to the role. Keep the email between 150–200 words. Use a genuine, conversational style as if you were a real person emailing the hiring team. Always respond in the same language as the user's input.`,
     user: `Write a cold email expressing interest in the ${ctx.position} role at ${ctx.company}.
 
 ## Candidate Background (synthesize, do NOT copy-paste):
@@ -109,7 +109,7 @@ function buildFollowUpPrompt(ctx: OutreachContext, followUpType: FollowUpType): 
 
   const scenario = scenarios[followUpType];
   return {
-    system: `You are a professional job seeker writing a follow-up email. Write in a natural, human tone — concise and respectful. Do NOT copy-paste from the resume or job description. Keep the email between 80–120 words.`,
+    system: `You are a professional job seeker writing a follow-up email. Write in a natural, human tone — concise and respectful. Do NOT copy-paste from the resume or job description. Keep the email between 80–120 words. Always respond in the same language as the user's input.`,
     user: `Write a follow-up email for the ${ctx.position} role at ${ctx.company}.
 
 ## Scenario: ${scenario.label}
@@ -136,7 +136,7 @@ Return ONLY valid JSON:
 
 function buildConnectMessagePrompt(ctx: OutreachContext): OutreachPrompt {
   return {
-    system: `You are a professional writing a short LinkedIn connection request. Keep it under 300 characters. Be genuine and concise.`,
+    system: `You are a professional writing a short LinkedIn connection request. Keep it under 300 characters. Be genuine and concise. Always respond in the same language as the user's input.`,
     user: `Write a short LinkedIn connect message for someone interested in the ${ctx.position} role at ${ctx.company}.
 
 ## Candidate Background (reference briefly):

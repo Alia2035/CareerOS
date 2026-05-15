@@ -32,7 +32,7 @@ Return ONLY valid JSON (no markdown, no extra text) in this format:
 
     const content = await chat(
       [
-        { role: "system", content: "You are a job posting parser. Always respond with valid JSON only, no markdown." },
+        { role: "system", content: "You are a job posting parser. Always respond with valid JSON only, no markdown. Always respond in the same language as the user's input." },
         { role: "user", content: prompt },
       ],
       { apiKey, baseUrl, model },

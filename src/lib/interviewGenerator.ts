@@ -39,7 +39,7 @@ export function buildQuestionsPrompt(ctx: QuestionGenerationContext): {
       : "";
 
   return {
-    system: `You are an expert technical interviewer and career coach. You generate highly specific, non-generic interview questions tailored to a particular candidate, role, and company. Every question must reference concrete details from the job description, resume, or keyword analysis. Never output questions like "Tell me about yourself" or "What are your strengths?" — those are too generic. Ground every question in the provided context. Return ONLY valid JSON.`,
+    system: `You are an expert technical interviewer and career coach. You generate highly specific, non-generic interview questions tailored to a particular candidate, role, and company. Every question must reference concrete details from the job description, resume, or keyword analysis. Never output questions like "Tell me about yourself" or "What are your strengths?" — those are too generic. Ground every question in the provided context. Always respond in the same language as the user's input. Return ONLY valid JSON.`,
 
     user: `Generate 6 interview questions for a candidate applying to **${ctx.position}** at **${ctx.company}**.
 
@@ -90,7 +90,7 @@ export function buildFeedbackPrompt(ctx: FeedbackContext): {
       : `- **STAR Check**: Not applicable (non-behavioral question). Return null.`;
 
   return {
-    system: `You are an expert interview coach providing constructive, actionable feedback. Be encouraging but honest. Point out specific strengths and concrete areas for improvement. When suggesting a better answer, write it in natural spoken language as if the candidate were answering in an interview. Return ONLY valid JSON.`,
+    system: `You are an expert interview coach providing constructive, actionable feedback. Be encouraging but honest. Point out specific strengths and concrete areas for improvement. When suggesting a better answer, write it in natural spoken language as if the candidate were answering in an interview. Always respond in the same language as the user's input. Return ONLY valid JSON.`,
 
     user: `Evaluate the following interview answer.
 
