@@ -1,0 +1,363 @@
+import type { Job, ResumeAnalysis, EmailTemplate, InterviewPrep, FollowUp } from "@/types";
+
+const now = new Date();
+const daysAgo = (n: number) => {
+  const d = new Date(now);
+  d.setDate(d.getDate() - n);
+  return d.toISOString().split("T")[0];
+};
+const daysFromNow = (n: number) => {
+  const d = new Date(now);
+  d.setDate(d.getDate() + n);
+  return d.toISOString().split("T")[0];
+};
+
+const emptyJobDefaults = {
+  deadlineDate: "",
+  resumeText: "",
+  resumeFileName: "",
+  atsScore: null as number | null,
+  matchedKeywords: [] as string[],
+  missingKeywords: [] as string[],
+};
+
+export const mockJobs: Job[] = [
+  {
+    id: "1",
+    company: "Stripe",
+    position: "Senior Product Designer",
+    location: "San Francisco, CA (Remote)",
+    status: "Interview",
+    appliedDate: daysAgo(12),
+    notes: "Referred by Alex Chen. Hiring manager reached out on LinkedIn.",
+    jobUrl: "https://stripe.com/jobs/123",
+    jobDescription: "We are looking for a Senior Product Designer to join our Design Systems team...",
+    salary: "$180K - $240K",
+    source: "LinkedIn",
+    followUpDate: daysFromNow(2),
+    createdAt: daysAgo(14),
+    updatedAt: daysAgo(12),
+    ...emptyJobDefaults,
+  },
+  {
+    id: "2",
+    company: "Linear",
+    position: "Full-Stack Engineer",
+    location: "Remote (US/EU)",
+    status: "Applied",
+    appliedDate: daysAgo(5),
+    notes: "Applied via company website. Great product, would love to work here.",
+    jobUrl: "https://linear.app/careers/456",
+    jobDescription: "Linear is seeking a full-stack engineer to build magical productivity tools...",
+    salary: "$160K - $220K",
+    source: "Company Website",
+    followUpDate: daysFromNow(5),
+    createdAt: daysAgo(7),
+    updatedAt: daysAgo(5),
+    ...emptyJobDefaults,
+  },
+  {
+    id: "3",
+    company: "Notion",
+    position: "Product Manager",
+    location: "New York, NY",
+    status: "Saved",
+    appliedDate: "",
+    notes: "Need to tailor resume for this one. Great culture fit.",
+    jobUrl: "https://notion.so/careers/789",
+    jobDescription: "Notion is looking for a Product Manager to lead our collaboration features...",
+    salary: "$170K - $230K",
+    source: "Indeed",
+    followUpDate: null,
+    createdAt: daysAgo(3),
+    updatedAt: daysAgo(3),
+    ...emptyJobDefaults,
+  },
+  {
+    id: "4",
+    company: "Figma",
+    position: "Design Engineer",
+    location: "San Francisco, CA",
+    status: "Offer",
+    appliedDate: daysAgo(30),
+    notes: "Offer received! Negotiating comp package.",
+    jobUrl: "https://figma.com/careers/101",
+    jobDescription: "Figma is hiring a Design Engineer to bridge design and engineering...",
+    salary: "$190K - $250K",
+    source: "LinkedIn",
+    followUpDate: daysFromNow(1),
+    createdAt: daysAgo(35),
+    updatedAt: daysAgo(2),
+    ...emptyJobDefaults,
+  },
+  {
+    id: "5",
+    company: "Vercel",
+    position: "Developer Advocate",
+    location: "Remote (Global)",
+    status: "Rejected",
+    appliedDate: daysAgo(20),
+    notes: "Made it to final round but they went with someone with more advocacy experience.",
+    jobUrl: "https://vercel.com/careers/202",
+    jobDescription: "Vercel is seeking a Developer Advocate to grow our community...",
+    salary: "$150K - $200K",
+    source: "LinkedIn",
+    followUpDate: null,
+    createdAt: daysAgo(25),
+    updatedAt: daysAgo(8),
+    ...emptyJobDefaults,
+  },
+  {
+    id: "6",
+    company: "Anthropic",
+    position: "Research Engineer",
+    location: "San Francisco, CA",
+    status: "Applied",
+    appliedDate: daysAgo(8),
+    notes: "Applied through referral. Really excited about AI safety.",
+    jobUrl: "https://anthropic.com/careers/303",
+    jobDescription: "Anthropic is looking for a Research Engineer to help build safe AI systems...",
+    salary: "$200K - $300K",
+    source: "Referral",
+    followUpDate: daysFromNow(3),
+    createdAt: daysAgo(10),
+    updatedAt: daysAgo(8),
+    ...emptyJobDefaults,
+  },
+  {
+    id: "7",
+    company: "Airbnb",
+    position: "Senior Frontend Engineer",
+    location: "Remote (US)",
+    status: "Interview",
+    appliedDate: daysAgo(15),
+    notes: "Phone screen scheduled for next week. Preparing system design.",
+    jobUrl: "https://airbnb.com/careers/404",
+    jobDescription: "Airbnb is seeking a Senior Frontend Engineer to reimagine the future of travel...",
+    salary: "$175K - $230K",
+    source: "LinkedIn",
+    followUpDate: daysFromNow(2),
+    createdAt: daysAgo(17),
+    updatedAt: daysAgo(10),
+    ...emptyJobDefaults,
+  },
+  {
+    id: "8",
+    company: "Gusto",
+    position: "Product Designer",
+    location: "Denver, CO (Hybrid)",
+    status: "Applied",
+    appliedDate: daysAgo(6),
+    notes: "Applied via company website. Mission-driven company.",
+    jobUrl: "https://gusto.com/careers/505",
+    jobDescription: "Gusto is hiring a Product Designer to create delightful payroll experiences...",
+    salary: "$140K - $190K",
+    source: "Company Website",
+    followUpDate: null,
+    createdAt: daysAgo(8),
+    updatedAt: daysAgo(6),
+    ...emptyJobDefaults,
+  },
+  {
+    id: "9",
+    company: "Shopify",
+    position: "Engineering Manager",
+    location: "Remote (North America)",
+    status: "Saved",
+    appliedDate: "",
+    notes: "Interesting role. Need to check team culture fit.",
+    jobUrl: "https://shopify.com/careers/606",
+    jobDescription: "Shopify is looking for an Engineering Manager to lead our merchant tools team...",
+    salary: "$200K - $280K",
+    source: "Indeed",
+    followUpDate: null,
+    createdAt: daysAgo(2),
+    updatedAt: daysAgo(2),
+    ...emptyJobDefaults,
+  },
+  {
+    id: "10",
+    company: "Datadog",
+    position: "Software Engineer - Infrastructure",
+    location: "New York, NY",
+    status: "Applied",
+    appliedDate: daysAgo(10),
+    notes: "Applied via LinkedIn. Strong infra background match.",
+    jobUrl: "https://datadog.com/careers/707",
+    jobDescription: "Datadog is seeking a Software Engineer to build scalable monitoring infrastructure...",
+    salary: "$170K - $220K",
+    source: "LinkedIn",
+    followUpDate: daysFromNow(4),
+    createdAt: daysAgo(12),
+    updatedAt: daysAgo(10),
+    ...emptyJobDefaults,
+  },
+];
+
+export const mockResumeAnalysis: ResumeAnalysis = {
+  id: "ra1",
+  jobId: "1",
+  jdText: mockJobs[0].jobDescription,
+  resumeText: "Experienced product designer with 6+ years in design systems...",
+  atsScore: 72,
+  matchedKeywords: ["product design", "design systems", "Figma", "user research", "prototyping"],
+  missingKeywords: ["accessibility", "design tokens", "motion design", "AB testing"],
+  suggestions: [
+    "Add 'accessibility' and 'WCAG compliance' to your experience section",
+    "Mention specific design token systems you have worked with",
+    "Include metrics on how your designs improved user engagement",
+    "Add 'motion design' if you have any experience with animations",
+  ],
+  createdAt: daysAgo(2),
+};
+
+export const mockEmails: EmailTemplate[] = [
+  {
+    id: "e1",
+    jobId: "1",
+    company: "Stripe",
+    position: "Senior Product Designer",
+    type: "cold-email",
+    subject: "Senior Product Designer Application - Design Systems Enthusiast",
+    body: `Hi there,
+
+I came across the Senior Product Designer role at Stripe and was immediately drawn to the opportunity to work on your Design Systems team.
+
+With 6+ years of experience in product design, including building and scaling design systems at [Previous Company], I believe I could bring valuable perspective to Stripe's mission of increasing the GDP of the internet.
+
+I'd love to chat about how my background in design systems could contribute to Stripe's product ecosystem.
+
+Best regards,
+[Your Name]`,
+    createdAt: daysAgo(2),
+  },
+  {
+    id: "e2",
+    jobId: "1",
+    company: "Stripe",
+    position: "Senior Product Designer",
+    type: "connect-message",
+    subject: "",
+    body: `Hi [Hiring Manager Name],
+
+I noticed you're hiring for a Senior Product Designer on the Design Systems team at Stripe. I've been following Stripe's design evolution for years and particularly admire the work your team did on Stripe Elements.
+
+I'm a product designer with deep experience in design systems - I led the redesign of [Previous Company]'s component library that served 200+ engineers. Would you be open to a brief chat about the role?
+
+Thanks!`,
+    createdAt: daysAgo(2),
+  },
+];
+
+export const mockInterviewPrep: InterviewPrep = {
+  id: "ip1",
+  jobId: "1",
+  company: "Stripe",
+  position: "Senior Product Designer",
+  questions: [
+    {
+      id: "q1",
+      question: "Tell me about a time you had to advocate for a design decision that was initially unpopular.",
+      starAnswer: {
+        situation: "At my previous company, I proposed moving from a fragmented design approach to a unified design system.",
+        task: "I needed to convince both the engineering team (concerned about implementation time) and the design team (concerned about creative constraints).",
+        action: "I created a prototype showing the efficiency gains, calculated the engineering hours saved, and ran a workshop to address each team's concerns collaboratively.",
+        result: "The design system was adopted within 3 months, reducing design-to-development handoff time by 40% and improving UI consistency across 12 products.",
+      },
+    },
+    {
+      id: "q2",
+      question: "Describe a project where you had to balance user needs with business constraints.",
+      starAnswer: {
+        situation: "We were redesigning the checkout flow and leadership wanted to add multiple upsell steps to increase revenue.",
+        task: "My job was to design a flow that drove business metrics without degrading the user experience.",
+        action: "I conducted user testing on different approaches, collected data on drop-off rates at each step, and proposed a single, contextual upsell that appeared post-purchase instead of disrupting the checkout flow.",
+        result: "The redesigned flow increased conversion by 15% while the post-purchase upsell generated 8% additional revenue - a win-win outcome.",
+      },
+    },
+    {
+      id: "q3",
+      question: "Tell me about a time you had to work with a difficult stakeholder.",
+      starAnswer: {
+        situation: "A VP of Engineering insisted on a specific UI pattern that usability testing showed was confusing to users.",
+        task: "I needed to guide the decision toward what was best for users while maintaining a good relationship with the VP.",
+        action: "Instead of saying no, I built both versions as prototypes, ran A/B tests with real users, and presented the data objectively. I also framed the discussion around shared goals of user satisfaction and engineering efficiency.",
+        result: "The VP appreciated the data-driven approach and became a strong advocate for user testing across the organization.",
+      },
+    },
+    {
+      id: "q4",
+      question: "How do you approach giving and receiving feedback on design work?",
+      starAnswer: {
+        situation: "Our design team was growing rapidly and we needed a structured feedback process to maintain quality.",
+        task: "I wanted to create a culture where feedback was constructive, specific, and welcomed.",
+        action: "I introduced design critique sessions with a clear framework: present the problem first, then the solution, and get feedback organized by 'what works', 'what to consider', and 'what to change'. I also modeled receiving feedback openly by asking specific questions about my own work.",
+        result: "The team adopted the framework, design quality improved measurably, and team surveys showed a 30% increase in psychological safety scores around sharing work-in-progress.",
+      },
+    },
+    {
+      id: "q5",
+      question: "Tell me about the most impactful design project you've led.",
+      starAnswer: {
+        situation: "Our mobile app had a 2.8-star rating largely due to usability issues, and user churn was increasing.",
+        task: "I was tasked with leading a complete mobile redesign to improve the user experience and reverse the churn trend.",
+        action: "I conducted 20+ user interviews, identified the top 5 pain points, created a new information architecture, designed and prototyped the new experience, and worked closely with engineering through implementation with weekly design QA sessions.",
+        result: "The redesigned app launched with a 4.4-star rating, daily active users increased by 45%, and churn dropped by 25% within the first quarter.",
+      },
+    },
+  ],
+  createdAt: daysAgo(3),
+};
+
+export const mockFollowUps: FollowUp[] = [
+  {
+    id: "f1",
+    jobId: "1",
+    company: "Stripe",
+    position: "Senior Product Designer",
+    dueDate: daysFromNow(2),
+    description: "Follow up with Alex about interview feedback",
+    completed: false,
+    createdAt: daysAgo(5),
+  },
+  {
+    id: "f2",
+    jobId: "4",
+    company: "Figma",
+    position: "Design Engineer",
+    dueDate: daysFromNow(1),
+    description: "Respond to offer letter / negotiate salary",
+    completed: false,
+    createdAt: daysAgo(2),
+  },
+  {
+    id: "f3",
+    jobId: "7",
+    company: "Airbnb",
+    position: "Senior Frontend Engineer",
+    dueDate: daysFromNow(2),
+    description: "Prepare system design presentation for onsite",
+    completed: false,
+    createdAt: daysAgo(4),
+  },
+  {
+    id: "f4",
+    jobId: "6",
+    company: "Anthropic",
+    position: "Research Engineer",
+    dueDate: daysFromNow(3),
+    description: "Send thank-you email after recruiter call",
+    completed: false,
+    createdAt: daysAgo(1),
+  },
+  {
+    id: "f5",
+    jobId: "2",
+    company: "Linear",
+    position: "Full-Stack Engineer",
+    dueDate: daysFromNow(5),
+    description: "Check application status on portal",
+    completed: false,
+    createdAt: daysAgo(5),
+  },
+];
