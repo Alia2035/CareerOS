@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useStore } from "@/lib/store";
 import { getLanguage } from "@/lib/settingsStore";
+import { useT } from "@/lib/i18n";
 import { Calendar, Clock } from "lucide-react";
 
 function daysLabel(dateStr: string): string {
@@ -17,6 +18,7 @@ function daysLabel(dateStr: string): string {
 
 export default function UpcomingInterviews() {
   const jobs = useStore((s) => s.jobs);
+  const t = useT();
 
   const upcoming = useMemo(() => {
     const today = new Date();
@@ -37,9 +39,9 @@ export default function UpcomingInterviews() {
       <div className="bg-white rounded-xl border border-gray-100 p-5">
         <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2 mb-4">
           <Calendar size={16} className="text-primary-500" />
-          Upcoming Interviews
+          {t("Upcoming Interviews")}
         </h3>
-        <p className="text-sm text-gray-400">No upcoming interviews</p>
+        <p className="text-sm text-gray-400">{t("No upcoming interviews")}</p>
       </div>
     );
   }
@@ -48,7 +50,7 @@ export default function UpcomingInterviews() {
     <div className="bg-white rounded-xl border border-gray-100 p-5">
       <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2 mb-4">
         <Calendar size={16} className="text-primary-500" />
-        Upcoming Interviews
+        {t("Upcoming Interviews")}
       </h3>
       <div className="space-y-3">
         {upcoming.map((job) => (

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { hasApiKey, getSettings, getLanguage } from "@/lib/settingsStore";
 import type { GeneratedQuestion, InterviewFeedback, QuestionType } from "@/types/interview";
+import { useT } from "@/lib/i18n";
 import {
   Loader2,
   Sparkles,
@@ -36,6 +37,7 @@ const questionTypeBadge: Record<QuestionType, string> = {
 
 export default function InterviewPage() {
   const jobs = useStore((s) => s.jobs);
+  const t = useT();
 
   const [selectedJobId, setSelectedJobId] = useState("");
   const [questions, setQuestions] = useState<GeneratedQuestion[]>([]);
@@ -184,7 +186,7 @@ export default function InterviewPage() {
       {/* Job Selector */}
       <div className="bg-white rounded-xl border border-gray-100 p-5">
         <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Select a Job
+          {t("Select a Job")}
         </label>
         <select
           value={selectedJobId}
@@ -278,7 +280,7 @@ export default function InterviewPage() {
             ) : (
               <Sparkles size={16} />
             )}
-            {loadingQuestions ? "Generating..." : "Generate Questions"}
+            {loadingQuestions ? t("Generating...") : t("Generate Questions")}
           </button>
           {error && !activeQuestion && (
             <p className="text-sm text-red-500">{error}</p>
@@ -296,7 +298,7 @@ export default function InterviewPage() {
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
             <MessageSquare size={16} className="text-primary-500" />
-            Interview Questions ({questions.length})
+            {t("Interview")} ({questions.length})
           </h3>
           <div className="space-y-2">
             {questions.map((q, i) => (
@@ -313,7 +315,7 @@ export default function InterviewPage() {
                   <span
                     className={`shrink-0 px-2 py-0.5 rounded text-xs font-medium ${questionTypeBadge[q.type]}`}
                   >
-                    {questionTypeLabel[q.type]}
+                    {t(questionTypeLabel[q.type])}
                   </span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-gray-800">{q.question}</p>
@@ -336,7 +338,7 @@ export default function InterviewPage() {
         <div className="bg-white rounded-xl border border-gray-100 p-5 space-y-4">
           <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
             <Brain size={16} className="text-primary-500" />
-            Mock Interview
+            {t("Mock Interview")}
           </h3>
 
           {/* Current Question */}
@@ -344,7 +346,7 @@ export default function InterviewPage() {
             <span
               className={`inline-block px-2 py-0.5 rounded text-xs font-medium mb-2 ${questionTypeBadge[activeQuestion.type]}`}
             >
-              {questionTypeLabel[activeQuestion.type]}
+              {t(questionTypeLabel[activeQuestion.type])}
             </span>
             <p className="text-sm font-medium text-gray-900">{activeQuestion.question}</p>
           </div>
@@ -352,7 +354,7 @@ export default function InterviewPage() {
           {/* Answer Input */}
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-              Your Answer
+              {t("Your Answer")}
             </label>
             <textarea
               value={answer}
@@ -375,7 +377,7 @@ export default function InterviewPage() {
               ) : (
                 <Send size={16} />
               )}
-              {loadingFeedback ? "Analyzing..." : "Get Feedback"}
+              {loadingFeedback ? t("Analyzing...") : t("Get Feedback")}
             </button>
             {error && activeQuestion && (
               <p className="text-sm text-red-500">{error}</p>
@@ -389,7 +391,7 @@ export default function InterviewPage() {
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <p className="text-xs font-semibold text-green-700 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                   <Lightbulb size={12} />
-                  Strengths
+                  {t("Strengths")}
                 </p>
                 <p className="text-sm text-green-800 whitespace-pre-wrap">{feedback.strengths}</p>
               </div>
@@ -398,7 +400,7 @@ export default function InterviewPage() {
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                   <ListChecks size={12} />
-                  Areas to Improve
+                  {t("Areas to Improve")}
                 </p>
                 <p className="text-sm text-amber-800 whitespace-pre-wrap">{feedback.areasToImprove}</p>
               </div>
@@ -406,7 +408,7 @@ export default function InterviewPage() {
               {/* Suggested Better Answer */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-1">
-                  Suggested Better Answer
+                  {t("Suggested Better Answer")}
                 </p>
                 <p className="text-sm text-blue-800 whitespace-pre-wrap">{feedback.suggestedAnswer}</p>
               </div>
@@ -415,7 +417,7 @@ export default function InterviewPage() {
               {feedback.starCheck && (
                 <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
                   <p className="text-xs font-semibold text-purple-700 uppercase tracking-wider mb-1">
-                    STAR Structure Check
+                    {t("STAR Structure Check")}
                   </p>
                   <p className="text-sm text-purple-800 whitespace-pre-wrap">{feedback.starCheck}</p>
                 </div>

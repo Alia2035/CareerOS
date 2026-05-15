@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useStore } from "@/lib/store";
 import { getSettings, getLanguage } from "@/lib/settingsStore";
+import { useT } from "@/lib/i18n";
 import { Loader2, Sparkles, Target, AlertCircle, Lightbulb, CheckCircle2, Copy } from "lucide-react";
 import type { ResumeAnalysis } from "@/types";
 
@@ -11,6 +12,7 @@ function ResumeAnalyzer() {
   const searchParams = useSearchParams();
   const jobs = useStore((s) => s.jobs);
   const updateJob = useStore((s) => s.updateJob);
+  const t = useT();
 
   const [selectedJobId, setSelectedJobId] = useState("");
   const [jdText, setJdText] = useState("");
@@ -143,7 +145,7 @@ function ResumeAnalyzer() {
       {/* Job Selector */}
       <div className="bg-white rounded-xl border border-gray-100 p-5">
         <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Select a Job (optional)
+          {t("Select a Job (optional)")}
         </label>
         <select
           value={selectedJobId}
@@ -166,7 +168,7 @@ function ResumeAnalyzer() {
         {/* JD Input */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <label className="text-sm font-medium text-gray-700 mb-2 block">
-            Job Description
+            {t("Job Description")}
           </label>
           <textarea
             value={jdText}
@@ -179,7 +181,7 @@ function ResumeAnalyzer() {
         {/* Resume Input */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <label className="text-sm font-medium text-gray-700 mb-2 block">
-            Your Resume
+            {t("Your Resume")}
           </label>
           <textarea
             value={resumeText}
@@ -202,13 +204,13 @@ function ResumeAnalyzer() {
           ) : (
             <Sparkles size={16} />
           )}
-          {loading ? "Analyzing..." : "Analyze Resume"}
+          {loading ? t("Analyzing...") : t("Analyze Resume")}
         </button>
         {error && <p className="text-sm text-red-500">{error}</p>}
         {savedToJobId && (
           <p className="text-sm text-green-600 flex items-center gap-1.5">
             <CheckCircle2 size={14} />
-            Results saved to job
+            {t("Results saved to job")}
           </p>
         )}
       </div>
@@ -220,7 +222,7 @@ function ResumeAnalyzer() {
           <div className="bg-white rounded-xl border border-gray-100 p-6">
             <div className="flex items-center gap-3 mb-4">
               <Target size={20} className="text-primary-600" />
-              <h2 className="font-semibold text-gray-900">ATS Match Score</h2>
+              <h2 className="font-semibold text-gray-900">{t("ATS Match Score")}</h2>
             </div>
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 rounded-full border-4 border-primary-200 flex items-center justify-center">
@@ -240,7 +242,7 @@ function ResumeAnalyzer() {
             <div className="bg-white rounded-xl border border-gray-100 p-5">
               <h3 className="text-sm font-medium text-green-700 flex items-center gap-2 mb-3">
                 <Target size={14} />
-                Matched Keywords
+                {t("Matched Keywords")}
               </h3>
               <div className="flex flex-wrap gap-1.5">
                 {result.matchedKeywords.map((kw) => (
@@ -253,7 +255,7 @@ function ResumeAnalyzer() {
             <div className="bg-white rounded-xl border border-gray-100 p-5">
               <h3 className="text-sm font-medium text-red-700 flex items-center gap-2 mb-3">
                 <AlertCircle size={14} />
-                Missing Keywords
+                {t("Missing Keywords")}
               </h3>
               <div className="flex flex-wrap gap-1.5">
                 {result.missingKeywords.map((kw) => (
@@ -269,7 +271,7 @@ function ResumeAnalyzer() {
           <div className="bg-white rounded-xl border border-gray-100 p-5">
             <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2 mb-3">
               <Lightbulb size={14} className="text-amber-500" />
-              Optimization Suggestions
+              {t("Optimization Suggestions")}
             </h3>
             <ul className="space-y-2">
               {result.suggestions.map((s, i) => (
@@ -297,7 +299,7 @@ function ResumeAnalyzer() {
               ) : (
                 <Sparkles size={16} />
               )}
-              {improving ? "Generating..." : "Generate Improved Resume"}
+              {improving ? t("Generating...") : t("Generate Improved Resume")}
             </button>
             {improveError && (
               <p className="text-sm text-red-500">{improveError}</p>
@@ -313,7 +315,7 @@ function ResumeAnalyzer() {
       {improvedResume && (
         <div className="space-y-3">
           <div className="flex items-center gap-4">
-            <h2 className="text-sm font-semibold text-gray-900">Resume Comparison</h2>
+            <h2 className="text-sm font-semibold text-gray-900">{t("Resume Comparison")}</h2>
             <button
               onClick={handleImprove}
               disabled={improving}
@@ -324,20 +326,20 @@ function ResumeAnalyzer() {
               ) : (
                 <Sparkles size={12} />
               )}
-              Regenerate
+              {t("Regenerate")}
             </button>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             {/* Original */}
             <div className="bg-white rounded-xl border border-gray-100 p-5">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-medium text-gray-500">Original Resume</h3>
+                <h3 className="text-sm font-medium text-gray-500">{t("Original Resume")}</h3>
                 <button
                   onClick={() => handleCopy(resumeText, "original")}
                   className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-primary-600 transition-colors"
                 >
                   <Copy size={12} />
-                  {copied === "original" ? "Copied!" : "Copy"}
+                  {copied === "original" ? t("Copied!") : t("Copy")}
                 </button>
               </div>
               <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed max-h-96 overflow-y-auto">
@@ -349,14 +351,14 @@ function ResumeAnalyzer() {
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-medium text-primary-600 flex items-center gap-1.5">
                   <Sparkles size={14} />
-                  Improved Resume
+                  {t("Improved Resume")}
                 </h3>
                 <button
                   onClick={() => handleCopy(improvedResume, "improved")}
                   className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-primary-600 transition-colors"
                 >
                   <Copy size={12} />
-                  {copied === "improved" ? "Copied!" : "Copy"}
+                  {copied === "improved" ? t("Copied!") : t("Copy")}
                 </button>
               </div>
               <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed max-h-96 overflow-y-auto">

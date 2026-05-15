@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { hasApiKey, getSettings, getLanguage } from "@/lib/settingsStore";
 import type { FollowUpType } from "@/lib/outreachGenerator";
+import { useT } from "@/lib/i18n";
 import { Loader2, Copy, Check, Sparkles, Mail, Briefcase, MapPin, X, RefreshCw, AlertCircle } from "lucide-react";
 
 type EmailType = "cold-email" | "connect-message" | "follow-up";
@@ -29,6 +30,7 @@ const regenerateHints = [
 
 export default function OutreachPage() {
   const jobs = useStore((s) => s.jobs);
+  const t = useT();
 
   const [selectedJobId, setSelectedJobId] = useState("");
   const [company, setCompany] = useState("");
@@ -171,7 +173,7 @@ export default function OutreachPage() {
       {/* Job Selector */}
       <div className="bg-white rounded-xl border border-gray-100 p-5">
         <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Select a Job (optional)
+          {t("Select a Job (optional)")}
         </label>
         <select
           value={selectedJobId}
@@ -221,7 +223,7 @@ export default function OutreachPage() {
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-              Company <span className="text-red-400">*</span>
+              {t("Company")} <span className="text-red-400">*</span>
             </label>
             <input
               value={company}
@@ -232,7 +234,7 @@ export default function OutreachPage() {
           </div>
           <div>
             <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-              Position <span className="text-red-400">*</span>
+              {t("Position")} <span className="text-red-400">*</span>
             </label>
             <input
               value={position}
@@ -245,7 +247,7 @@ export default function OutreachPage() {
 
         {/* Email Type Selector */}
         <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Email Type</label>
+          <label className="text-sm font-medium text-gray-700 mb-2 block">{t("Email Type")}</label>
           <div className="flex gap-1.5 flex-wrap">
             {(Object.keys(emailTypeLabels) as EmailType[]).map((type) => (
               <button
@@ -261,7 +263,7 @@ export default function OutreachPage() {
                     : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
                 }`}
               >
-                {emailTypeLabels[type]}
+                {t(emailTypeLabels[type])}
               </button>
             ))}
           </div>
@@ -271,7 +273,7 @@ export default function OutreachPage() {
         {emailType === "follow-up" && (
           <div>
             <label className="text-sm font-medium text-gray-700 mb-2 block">
-              Follow-up Scenario
+              {t("Follow-up Scenario")}
             </label>
             <div className="flex gap-1.5 flex-wrap">
               {(Object.keys(followUpTypeLabels) as FollowUpType[]).map((ft) => (
@@ -307,7 +309,7 @@ export default function OutreachPage() {
             ) : (
               <Sparkles size={16} />
             )}
-            {loading ? "Generating..." : "Generate Email"}
+            {loading ? t("Generating...") : t("Generate Email")}
           </button>
           {error && <p className="text-sm text-red-500">{error}</p>}
         </div>
@@ -336,12 +338,12 @@ export default function OutreachPage() {
                 {copied ? (
                   <>
                     <Check size={14} className="text-green-500" />
-                    <span className="text-green-500">Copied!</span>
+                    <span className="text-green-500">{t("Copied!")}</span>
                   </>
                 ) : (
                   <>
                     <Copy size={14} />
-                    Copy
+                    {t("Copy")}
                   </>
                 )}
               </button>
@@ -351,7 +353,7 @@ export default function OutreachPage() {
                 className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-primary-600 transition-colors disabled:opacity-40"
               >
                 <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-                Regenerate
+                {t("Regenerate")}
               </button>
             </div>
           </div>

@@ -11,6 +11,7 @@ import {
 } from "@/lib/settingsStore";
 import { Loader2, CheckCircle2, XCircle, Eye, EyeOff, Shield, Trash2, Download, Upload, AlertCircle } from "lucide-react";
 import { downloadBackup, importBackup } from "@/lib/dataBackup";
+import { useT } from "@/lib/i18n";
 
 type Provider = "deepseek" | "openai" | "other";
 
@@ -21,6 +22,7 @@ const providerLabels: Record<Provider, string> = {
 };
 
 export default function SettingsPage() {
+  const t = useT();
   const [provider, setProvider] = useState<Provider>("deepseek");
   const [apiKey, setApiKey] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
@@ -169,32 +171,39 @@ export default function SettingsPage() {
 
       {/* Language */}
       <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-900">Language</h2>
+        <h2 className="text-base font-semibold text-gray-900">{t("Language")}</h2>
         <div>
           <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-            System Language
+            {t("System Language")}
           </label>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as Language)}
             className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
           >
-            <option value="en">English</option>
-            <option value="zh">中文</option>
+            <option value="en">{t("English")}</option>
+            <option value="zh">{t("中文")}</option>
           </select>
-          <p className="mt-1 text-xs text-gray-400">
-            Changes UI labels, date formats, and AI response language.
-          </p>
+          {language === "en" && (
+            <p className="mt-1 text-xs text-gray-400">
+              Changes UI labels, date formats, and AI response language.
+            </p>
+          )}
+          {language === "zh" && (
+            <p className="mt-1 text-xs text-gray-400">
+              切换界面语言、日期格式及 AI 回复语言。
+            </p>
+          )}
         </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-5">
-        <h2 className="text-base font-semibold text-gray-900">API Configuration</h2>
+        <h2 className="text-base font-semibold text-gray-900">{t("API Configuration")}</h2>
 
         {/* Provider */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-            AI Provider
+            {t("AI Provider")}
           </label>
           <select
             value={provider}
@@ -215,7 +224,7 @@ export default function SettingsPage() {
         {/* API Key */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-            API Key
+            {t("API Key")}
           </label>
           <div className="relative">
             <input
@@ -241,7 +250,7 @@ export default function SettingsPage() {
         {/* Base URL */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-            Base URL
+            {t("Base URL")}
           </label>
           <input
             type="text"
@@ -258,7 +267,7 @@ export default function SettingsPage() {
         {/* Model */}
         <div>
           <label className="text-sm font-medium text-gray-700 mb-1.5 block">
-            Model Name
+            {t("Model Name")}
           </label>
           <input
             type="text"
@@ -286,19 +295,19 @@ export default function SettingsPage() {
             ) : testResult === "fail" ? (
               <XCircle size={16} className="text-red-500" />
             ) : null}
-            {testing ? "Testing..." : "Test Connection"}
+            {testing ? t("Testing...") : t("Test Connection")}
           </button>
 
           {testResult === "success" && (
             <span className="text-sm text-green-600 flex items-center gap-1">
               <CheckCircle2 size={14} />
-              Connection successful
+              {t("Connection successful")}
             </span>
           )}
           {testResult === "fail" && apiKey.trim() && (
             <span className="text-sm text-red-500 flex items-center gap-1">
               <XCircle size={14} />
-              Connection failed — check your API key, base URL, and model.
+              {t("Connection failed — check your API key, base URL, and model.")}
             </span>
           )}
 
@@ -309,7 +318,7 @@ export default function SettingsPage() {
             className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
           >
             <Trash2 size={14} />
-            Clear
+            {t("Clear")}
           </button>
 
           <button
@@ -319,14 +328,14 @@ export default function SettingsPage() {
             {saving || saved ? (
               <CheckCircle2 size={16} />
             ) : null}
-            {saved ? "Saved!" : "Save"}
+            {saved ? t("Saved!") : t("Save")}
           </button>
         </div>
       </div>
 
       {/* Data Backup */}
       <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-900">Data Backup</h2>
+        <h2 className="text-base font-semibold text-gray-900">{t("Data Backup")}</h2>
         <p className="text-sm text-gray-500">
           Export your data (jobs, resumes, analyses, AI-generated content) as a JSON file.
           Use this to back up your data or move it to another device.
@@ -338,12 +347,12 @@ export default function SettingsPage() {
             className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
           >
             <Download size={16} />
-            Export Data
+            {t("Export Data")}
           </button>
 
           <label className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
             <Upload size={16} />
-            Import Data
+            {t("Import Data")}
             <input
               type="file"
               accept=".json"

@@ -7,28 +7,30 @@ import RecentApps from "@/components/dashboard/RecentApps";
 import FollowUpList from "@/components/dashboard/FollowUpList";
 import UpcomingInterviews from "@/components/dashboard/UpcomingInterviews";
 import { Briefcase, Send, Users, Trophy, XCircle } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
 export default function DashboardPage() {
   const jobs = useStore((s) => s.jobs);
   const stats = useMemo(() => calcStats(jobs), [jobs]);
+  const t = useT();
 
   const rateItems = useMemo(
     () => [
-      { label: "Response Rate", value: `${stats.responseRate}%` },
-      { label: "Interview Rate", value: `${stats.interviewRate}%` },
-      { label: "Offer Rate", value: `${stats.offerRate}%` },
+      { label: t("Response Rate"), value: `${stats.responseRate}%` },
+      { label: t("Interview Rate"), value: `${stats.interviewRate}%` },
+      { label: t("Offer Rate"), value: `${stats.offerRate}%` },
     ],
-    [stats.responseRate, stats.interviewRate, stats.offerRate]
+    [stats.responseRate, stats.interviewRate, stats.offerRate, t]
   );
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <StatCard label="Total" value={stats.total} icon={<Briefcase size={18} className="text-white" />} colorClass="bg-gray-500" />
-        <StatCard label="Applied" value={stats.applied} icon={<Send size={18} className="text-white" />} colorClass="bg-blue-500" />
-        <StatCard label="Interview" value={stats.interview} icon={<Users size={18} className="text-white" />} colorClass="bg-yellow-500" />
-        <StatCard label="Offer" value={stats.offer} icon={<Trophy size={18} className="text-white" />} colorClass="bg-green-500" />
-        <StatCard label="Rejected" value={stats.rejected} icon={<XCircle size={18} className="text-white" />} colorClass="bg-red-500" />
+        <StatCard label={t("Total")} value={stats.total} icon={<Briefcase size={18} className="text-white" />} colorClass="bg-gray-500" />
+        <StatCard label={t("Applied")} value={stats.applied} icon={<Send size={18} className="text-white" />} colorClass="bg-blue-500" />
+        <StatCard label={t("Interview")} value={stats.interview} icon={<Users size={18} className="text-white" />} colorClass="bg-yellow-500" />
+        <StatCard label={t("Offer")} value={stats.offer} icon={<Trophy size={18} className="text-white" />} colorClass="bg-green-500" />
+        <StatCard label={t("Rejected")} value={stats.rejected} icon={<XCircle size={18} className="text-white" />} colorClass="bg-red-500" />
       </div>
 
       <div className="grid grid-cols-3 gap-4">

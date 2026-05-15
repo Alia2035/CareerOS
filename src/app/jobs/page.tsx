@@ -8,6 +8,7 @@ import JobCard from "@/components/jobs/JobCard";
 import JobForm from "@/components/jobs/JobForm";
 import JobFinderModal from "@/components/jobs/JobFinderModal";
 import { Plus, Search } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
 const statusFilters: { label: string; value: JobStatus | "All" }[] = [
   { label: "All", value: "All" },
@@ -36,6 +37,7 @@ const sortOptions: { label: string; value: SortBy }[] = [
 
 export default function JobsPage() {
   const jobs = useStore((s) => s.jobs);
+  const t = useT();
   const [statusFilter, setStatusFilter] = useState<JobStatus | "All">("All");
   const [atsFilter, setAtsFilter] = useState<AtsFilter>("All");
   const [sortBy, setSortBy] = useState<SortBy>("Default");
@@ -74,7 +76,7 @@ export default function JobsPage() {
                   : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
               }`}
             >
-              {f.label}
+              {t(f.label)}
               {f.value !== "All" && (
                 <span className="ml-1.5 opacity-70">{counts[f.value] ?? 0}</span>
               )}
@@ -87,14 +89,14 @@ export default function JobsPage() {
             className="flex items-center gap-2 px-4 py-2 text-primary-600 hover:text-primary-700 border border-primary-200 hover:border-primary-300 bg-white rounded-lg text-sm font-medium transition-colors"
           >
             <Search size={16} />
-            Find Jobs with AI
+            {t("Find Jobs with AI")}
           </button>
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
           >
             <Plus size={16} />
-            Add Job
+            {t("Add Job")}
           </button>
         </div>
       </div>
@@ -112,7 +114,7 @@ export default function JobsPage() {
                   : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-200"
               }`}
             >
-              {f.label}
+              {t(f.label)}
             </button>
           ))}
         </div>
@@ -123,7 +125,7 @@ export default function JobsPage() {
         >
           {sortOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
-              {opt.label}
+              {t(opt.label)}
             </option>
           ))}
         </select>
@@ -140,7 +142,7 @@ export default function JobsPage() {
         ))}
         {filtered.length === 0 && (
           <div className="text-center py-16 bg-white rounded-xl border border-gray-100">
-            <p className="text-gray-400 text-sm">No jobs match the current filters.</p>
+            <p className="text-gray-400 text-sm">{t("No jobs match the current filters.")}</p>
           </div>
         )}
       </div>

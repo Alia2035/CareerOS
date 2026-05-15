@@ -8,6 +8,7 @@ import { formatDate, getStatusColor, getAtsColor } from "@/lib/utils";
 import { getNextAction } from "@/lib/getNextAction";
 import { MapPin, Calendar, Edit2, Trash2, ArrowRight, ChevronDown, ExternalLink } from "lucide-react";
 import JobForm from "./JobForm";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   job: Job;
@@ -21,6 +22,7 @@ export default function JobCard({ job, isExpanded, onToggle }: Props) {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showFullJd, setShowFullJd] = useState(false);
+  const t = useT();
 
   const nextAction = getNextAction(job);
 
@@ -64,7 +66,7 @@ export default function JobCard({ job, isExpanded, onToggle }: Props) {
           </div>
           <div className="flex items-start gap-2 shrink-0">
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${getAtsColor(job.atsScore)}`}>
-              {job.atsScore !== null ? `ATS ${job.atsScore}%` : "Not analyzed"}
+              {job.atsScore !== null ? `ATS ${job.atsScore}%` : t("Not analyzed")}
             </span>
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${getStatusColor(job.status)}`}>
               {job.status}
@@ -82,19 +84,19 @@ export default function JobCard({ job, isExpanded, onToggle }: Props) {
             onClick={(e) => { e.stopPropagation(); setShowEdit(true); }}
             className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-primary-600 transition-colors"
           >
-            <Edit2 size={12} /> Edit
+            <Edit2 size={12} /> {t("Edit")}
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); setShowDelete(true); }}
             className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-red-600 transition-colors"
           >
-            <Trash2 size={12} /> Delete
+            <Trash2 size={12} /> {t("Delete")}
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); handleGo(); }}
             className="flex items-center gap-1 text-xs font-medium text-primary-600 hover:text-primary-700 ml-auto transition-colors"
           >
-            Next: {nextAction.label}
+            {t("Next:")} {nextAction.label}
             <ArrowRight size={12} />
           </button>
         </div>
@@ -107,14 +109,14 @@ export default function JobCard({ job, isExpanded, onToggle }: Props) {
           >
             <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
               {job.location && (
-                <Detail label="Location" value={job.location} />
+                <Detail label={t("Location")} value={job.location} />
               )}
               {job.salary && (
-                <Detail label="Salary" value={job.salary} />
+                <Detail label={t("Salary")} value={job.salary} />
               )}
               {job.jobUrl && (
                 <div>
-                  <span className="text-xs text-gray-400">Job URL</span>
+                  <span className="text-xs text-gray-400">{t("Job URL")}</span>
                   <a
                     href={job.jobUrl}
                     target="_blank"
@@ -127,29 +129,29 @@ export default function JobCard({ job, isExpanded, onToggle }: Props) {
                 </div>
               )}
               {job.appliedDate && (
-                <Detail label="Applied Date" value={formatDate(job.appliedDate)} />
+                <Detail label={t("Applied Date")} value={formatDate(job.appliedDate)} />
               )}
               {job.followUpDate && (
-                <Detail label="Follow-up Date" value={formatDate(job.followUpDate)} />
+                <Detail label={t("Follow-up Date")} value={formatDate(job.followUpDate)} />
               )}
               {job.deadlineDate && (
-                <Detail label="Deadline Date" value={formatDate(job.deadlineDate)} />
+                <Detail label={t("Deadline Date")} value={formatDate(job.deadlineDate)} />
               )}
               {job.source && (
-                <Detail label="Source" value={job.source} />
+                <Detail label={t("Source")} value={job.source} />
               )}
             </div>
 
             {job.notes && (
               <div className="mt-3">
-                <span className="text-xs text-gray-400">Notes</span>
+                <span className="text-xs text-gray-400">{t("Notes")}</span>
                 <p className="text-sm text-gray-600 mt-0.5">{job.notes}</p>
               </div>
             )}
 
             {job.jobDescription && (
               <div className="mt-3">
-                <span className="text-xs text-gray-400">Job Description</span>
+                <span className="text-xs text-gray-400">{t("Job Description")}</span>
                 <p className="text-sm text-gray-600 mt-0.5 whitespace-pre-wrap">
                   {showFullJd || job.jobDescription.length <= 300
                     ? job.jobDescription
@@ -160,7 +162,7 @@ export default function JobCard({ job, isExpanded, onToggle }: Props) {
                     onClick={() => setShowFullJd(!showFullJd)}
                     className="text-xs text-primary-600 hover:underline mt-1"
                   >
-                    {showFullJd ? "Show less" : "Show more"}
+                    {showFullJd ? t("Show less") : t("Show more")}
                   </button>
                 )}
               </div>
@@ -175,22 +177,22 @@ export default function JobCard({ job, isExpanded, onToggle }: Props) {
       {showDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
           <div className="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-lg">
-            <h3 className="font-semibold text-gray-900">Delete Job?</h3>
+            <h3 className="font-semibold text-gray-900">{t("Delete Job?")}</h3>
             <p className="text-sm text-gray-500 mt-1">
-              Remove {job.position} at {job.company}? This can&apos;t be undone.
+              {t("Delete Job?")} {job.position} at {job.company}?
             </p>
             <div className="flex gap-2 mt-4 justify-end">
               <button
                 onClick={() => setShowDelete(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                Cancel
+                {t("Cancel")}
               </button>
               <button
                 onClick={handleDelete}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors"
               >
-                Delete
+                {t("Delete")}
               </button>
             </div>
           </div>

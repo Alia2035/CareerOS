@@ -5,9 +5,11 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { formatDate, getStatusColor } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 export default function RecentApps() {
   const jobs = useStore((s) => s.jobs);
+  const t = useT();
 
   const recent = useMemo(
     () =>
@@ -20,9 +22,9 @@ export default function RecentApps() {
   return (
     <div className="bg-white rounded-xl border border-gray-100">
       <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
-        <h2 className="font-semibold text-gray-900">Recent Applications</h2>
+        <h2 className="font-semibold text-gray-900">{t("Recent Applications")}</h2>
         <Link href="/jobs" className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1">
-          View all <ArrowRight size={14} />
+          {t("View all")} <ArrowRight size={14} />
         </Link>
       </div>
       <div className="divide-y divide-gray-50">
@@ -39,7 +41,7 @@ export default function RecentApps() {
         ))}
         {recent.length === 0 && (
           <div className="px-5 py-8 text-center text-sm text-gray-400">
-            No applications yet. Start tracking your job search!
+            {t("No applications yet. Start tracking your job search!")}
           </div>
         )}
       </div>

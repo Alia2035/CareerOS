@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { useStore, calcStats } from "@/lib/store";
+import { useT } from "@/lib/i18n";
 import {
   PieChart, Pie, Cell, ResponsiveContainer,
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -20,6 +21,7 @@ const statusOrder = ["Saved", "Applied", "Interview", "Offer", "Rejected"];
 export default function AnalyticsPage() {
   const jobs = useStore((s) => s.jobs);
   const stats = useMemo(() => calcStats(jobs), [jobs]);
+  const t = useT();
 
   const pieData = useMemo(
     () => statusOrder.map((status) => ({ name: status, value: jobs.filter((j) => j.status === status).length })),
@@ -57,9 +59,9 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Response Rate", value: `${stats.responseRate}%`, sub: "of applications get a response" },
-          { label: "Interview Rate", value: `${stats.interviewRate}%`, sub: "of applications lead to interview" },
-          { label: "Offer Rate", value: `${stats.offerRate}%`, sub: "of applications result in offer" },
+          { label: t("Response Rate"), value: `${stats.responseRate}%`, sub: "of applications get a response" },
+          { label: t("Interview Rate"), value: `${stats.interviewRate}%`, sub: "of applications lead to interview" },
+          { label: t("Offer Rate"), value: `${stats.offerRate}%`, sub: "of applications result in offer" },
         ].map((item) => (
           <div key={item.label} className="bg-white rounded-xl border border-gray-100 px-5 py-5 text-center">
             <p className="text-3xl font-bold text-gray-900">{item.value}</p>
@@ -71,7 +73,7 @@ export default function AnalyticsPage() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-semibold text-gray-900 mb-4">Application Status</h2>
+          <h2 className="font-semibold text-gray-900 mb-4">{t("Application Status")}</h2>
           {jobs.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
@@ -85,12 +87,12 @@ export default function AnalyticsPage() {
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-64 flex items-center justify-center text-sm text-gray-400">No data yet</div>
+            <div className="h-64 flex items-center justify-center text-sm text-gray-400">{t("No data yet")}</div>
           )}
         </div>
 
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h2 className="font-semibold text-gray-900 mb-4">Application Trend (30d)</h2>
+          <h2 className="font-semibold text-gray-900 mb-4">{t("Application Trend (30d)")}</h2>
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={trendData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -106,7 +108,7 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="bg-white rounded-xl border border-gray-100 p-5">
-        <h2 className="font-semibold text-gray-900 mb-4">Applications by Source</h2>
+        <h2 className="font-semibold text-gray-900 mb-4">{t("Applications by Source")}</h2>
         {sourceData.length > 0 ? (
           <div className="space-y-3">
             {sourceData.map(([source, count]) => (
@@ -120,7 +122,7 @@ export default function AnalyticsPage() {
             ))}
           </div>
         ) : (
-          <div className="h-20 flex items-center justify-center text-sm text-gray-400">No data yet</div>
+          <div className="h-20 flex items-center justify-center text-sm text-gray-400">{t("No data yet")}</div>
         )}
       </div>
     </div>

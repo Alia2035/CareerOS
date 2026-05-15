@@ -16,20 +16,22 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/jobs", label: "Jobs", icon: Briefcase },
-  { href: "/resume", label: "Resume", icon: FileText },
-  { href: "/outreach", label: "Outreach", icon: Mail },
-  { href: "/interview", label: "Interview", icon: MessageSquare },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/", key: "Dashboard", icon: LayoutDashboard },
+  { href: "/jobs", key: "Jobs", icon: Briefcase },
+  { href: "/resume", key: "Resume", icon: FileText },
+  { href: "/outreach", key: "Outreach", icon: Mail },
+  { href: "/interview", key: "Interview", icon: MessageSquare },
+  { href: "/analytics", key: "Analytics", icon: BarChart3 },
+  { href: "/settings", key: "Settings", icon: Settings },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const t = useT();
 
   return (
     <>
@@ -91,7 +93,7 @@ export default function Sidebar() {
                 )}
               >
                 <item.icon size={18} />
-                {item.label}
+                {t(item.key)}
               </Link>
             );
           })}
@@ -106,7 +108,7 @@ export default function Sidebar() {
             className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-600 transition-colors"
           >
             <ExternalLink size={12} />
-            Give Feedback
+            {t("Give Feedback")}
           </a>
           <p className="text-xs text-gray-400">CareerOS v0.1</p>
         </div>

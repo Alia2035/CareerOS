@@ -4,10 +4,12 @@ import { useMemo } from "react";
 import { useStore } from "@/lib/store";
 import { getRelativeDate } from "@/lib/utils";
 import { CheckCircle2, Circle } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
 export default function FollowUpList() {
   const followUps = useStore((s) => s.followUps);
   const toggleFollowUp = useStore((s) => s.toggleFollowUp);
+  const t = useT();
 
   const pending = useMemo(
     () =>
@@ -22,7 +24,7 @@ export default function FollowUpList() {
   return (
     <div className="bg-white rounded-xl border border-gray-100">
       <div className="px-5 py-4 border-b border-gray-50">
-        <h2 className="font-semibold text-gray-900">Pending Follow-ups</h2>
+        <h2 className="font-semibold text-gray-900">{t("Pending Follow-ups")}</h2>
       </div>
       <div className="divide-y divide-gray-50">
         {pending.map((f) => (
@@ -52,7 +54,7 @@ export default function FollowUpList() {
         ))}
         {pending.length === 0 && completed.length === 0 && (
           <div className="px-5 py-8 text-center text-sm text-gray-400">
-            No follow-ups yet. Add one from the Jobs page!
+            {t("No follow-ups yet. Add one from the Jobs page!")}
           </div>
         )}
       </div>
