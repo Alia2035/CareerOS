@@ -15,6 +15,7 @@ export async function POST(req: Request) {
       apiKey,
       baseUrl,
       model,
+      language,
     } = await req.json();
 
     if (!question || !answer) {
@@ -50,7 +51,7 @@ export async function POST(req: Request) {
       jobDescription: jobDescription || "",
     };
 
-    const prompt = buildFeedbackPrompt(ctx);
+    const prompt = buildFeedbackPrompt(ctx, language);
     const content = await chat(
       [
         { role: "system", content: prompt.system },

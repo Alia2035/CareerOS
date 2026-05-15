@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { chat } from "@/lib/aiClient";
+import { langInstruction, type Language } from "@/lib/i18n";
 
 const PROXIES = [
   { name: "markdown.new", buildUrl: (url: string) => `https://markdown.new/${url}` },
@@ -53,6 +54,7 @@ async function aiExtract(
   apiKey: string,
   baseUrl?: string,
   model?: string,
+  language?: Language,
 ): Promise<{
   company: string;
   position: string;
@@ -63,7 +65,7 @@ async function aiExtract(
 } | null> {
   const truncated = rawContent.slice(0, 10_000);
 
-  const systemPrompt = `You are a job posting parser. Extract structured information from the provided markdown/HTML content of a job posting page. Always respond with valid JSON only, no markdown. Always respond in the same language as the user's input.`;
+  const systemPrompt = `You are a job posting parser. Extract structured information from the provided markdown/HTML content of a job posting page. Always respond with valid JSON only, no markdown. ${langInstruction(language)}`;
 
   const userPrompt = `Extract the following fields from this job posting content. If a field cannot be found, return an empty string for it.
 
@@ -123,7 +125,7 @@ Return ONLY valid JSON (no markdown, no extra text):
 
 export async function POST(req: Request) {
   try {
-    const { url, apiKey, baseUrl, model } = await req.json();
+    const { url, apiKey, baseUrl, model, language } = await req.json();
 
     if (!url) {
       return NextResponse.json({ error: "Missing URL" }, { status: 400 });
@@ -154,7 +156,7 @@ export async function POST(req: Request) {
     }
 
     // Step 2: Extract fields via AI
-    const extracted = await aiExtract(rawContent, url, apiKey, baseUrl, model);
+    const extracted = await aiExtract(rawContent, url, apiKey, baseUrl, model, language);
 
     if (!extracted || (!extracted.company && !extracted.position && !extracted.jdText)) {
       return NextResponse.json({

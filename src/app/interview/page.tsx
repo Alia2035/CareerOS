@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useStore } from "@/lib/store";
-import { hasApiKey, getSettings } from "@/lib/settingsStore";
+import { hasApiKey, getSettings, getLanguage } from "@/lib/settingsStore";
 import type { GeneratedQuestion, InterviewFeedback, QuestionType } from "@/types/interview";
 import {
   Loader2,
@@ -85,6 +85,7 @@ export default function InterviewPage() {
         atsScore: selectedJob.atsScore,
         matchedKeywords: selectedJob.matchedKeywords || [],
         missingKeywords: selectedJob.missingKeywords || [],
+        language: getLanguage(),
       };
 
       if (settings?.apiKey) {
@@ -134,6 +135,7 @@ export default function InterviewPage() {
         company: selectedJob?.company || "",
         position: selectedJob?.position || "",
         jobDescription: selectedJob?.jobDescription || "",
+        language: getLanguage(),
       };
 
       if (settings?.apiKey) {

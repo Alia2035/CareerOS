@@ -1,5 +1,6 @@
 import type { AIClientConfig } from "@/lib/aiClient";
 import { chat } from "@/lib/aiClient";
+import { langInstruction, type Language } from "@/lib/i18n";
 
 export interface JobFinderInput {
   resumeText: string;
@@ -19,9 +20,11 @@ export interface JobFinderResult {
   matchingRationale: string;
 }
 
-const SYSTEM_PROMPT = `You are an expert career strategist and job search consultant. Based on the user's resume and preferences, generate a comprehensive job search strategy.
+function buildSystemPrompt(language?: Language): string {
+  return `You are an expert career strategist and job search consultant. Based on the user's resume and preferences, generate a comprehensive job search strategy.
 
-Always respond in the same language as the user's input. Return ONLY valid JSON, no markdown, no extra text.`;
+${langInstruction(language)} Return ONLY valid JSON, no markdown, no extra text.`;
+}
 
 function buildUserPrompt(input: JobFinderInput): string {
   return `Generate a job search strategy based on the following information:
@@ -99,10 +102,11 @@ export function parseJobFinderResponse(raw: string): JobFinderResult | null {
 export async function generateJobSearchPlan(
   input: JobFinderInput,
   config: AIClientConfig,
+  language?: Language,
 ): Promise<JobFinderResult> {
   const content = await chat(
     [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: buildSystemPrompt(language) },
       { role: "user", content: buildUserPrompt(input) },
     ],
     config,

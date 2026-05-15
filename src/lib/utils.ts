@@ -1,3 +1,6 @@
+import { getLocale } from "@/lib/i18n";
+import { getLanguage } from "@/lib/settingsStore";
+
 export function cn(...classes: (string | boolean | undefined | null)[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -5,7 +8,7 @@ export function cn(...classes: (string | boolean | undefined | null)[]) {
 export function formatDate(dateStr: string): string {
   if (!dateStr) return "";
   const date = new Date(dateStr);
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString(getLocale(), {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -17,11 +20,12 @@ export function getRelativeDate(dateStr: string): string {
   const date = new Date(dateStr);
   const now = new Date();
   const diff = Math.floor((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  const isZh = getLanguage() === "zh";
 
-  if (diff < 0) return `${Math.abs(diff)}d ago`;
-  if (diff === 0) return "Today";
-  if (diff === 1) return "Tomorrow";
-  return `In ${diff}d`;
+  if (diff < 0) return isZh ? `${Math.abs(diff)}天前` : `${Math.abs(diff)}d ago`;
+  if (diff === 0) return isZh ? "今天" : "Today";
+  if (diff === 1) return isZh ? "明天" : "Tomorrow";
+  return isZh ? `${diff}天后` : `In ${diff}d`;
 }
 
 export function getAtsColor(score: number | null): string {

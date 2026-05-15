@@ -7,6 +7,7 @@ import {
   clearSettings,
   getProviderDefaults,
   type UserSettings,
+  type Language,
 } from "@/lib/settingsStore";
 import { Loader2, CheckCircle2, XCircle, Eye, EyeOff, Shield, Trash2, Download, Upload, AlertCircle } from "lucide-react";
 import { downloadBackup, importBackup } from "@/lib/dataBackup";
@@ -24,6 +25,7 @@ export default function SettingsPage() {
   const [apiKey, setApiKey] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
   const [model, setModel] = useState("");
+  const [language, setLanguage] = useState<Language>("en");
   const [showKey, setShowKey] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"success" | "fail" | null>(null);
@@ -43,6 +45,7 @@ export default function SettingsPage() {
       setApiKey(settings.apiKey || "");
       setBaseUrl(settings.baseUrl || "");
       setModel(settings.model || "");
+      setLanguage(settings.language || "en");
     } else {
       // Set defaults for initial provider
       const defaults = getProviderDefaults("deepseek");
@@ -90,6 +93,7 @@ export default function SettingsPage() {
       apiKey: apiKey.trim(),
       baseUrl: baseUrl.trim(),
       model: model.trim(),
+      language,
     };
     saveSettings(settings);
     setSaving(true);
@@ -159,6 +163,27 @@ export default function SettingsPage() {
           <p className="text-sm font-medium text-blue-800">Your API key is stored locally in your browser.</p>
           <p className="text-xs text-blue-600 mt-1">
             Do not use this on shared or public computers. Your key is never uploaded to any server except the AI provider you choose.
+          </p>
+        </div>
+      </div>
+
+      {/* Language */}
+      <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-4">
+        <h2 className="text-base font-semibold text-gray-900">Language</h2>
+        <div>
+          <label className="text-sm font-medium text-gray-700 mb-1.5 block">
+            System Language
+          </label>
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as Language)}
+            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
+          >
+            <option value="en">English</option>
+            <option value="zh">中文</option>
+          </select>
+          <p className="mt-1 text-xs text-gray-400">
+            Changes UI labels, date formats, and AI response language.
           </p>
         </div>
       </div>

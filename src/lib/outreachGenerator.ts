@@ -1,3 +1,5 @@
+import { langInstruction, type Language } from "@/lib/i18n";
+
 export type FollowUpType = "no-response" | "after-interview" | "still-interested";
 
 export interface OutreachContext {
@@ -20,21 +22,23 @@ export function buildOutreachPrompt(
   options?: {
     followUpType?: FollowUpType;
     regenerateHint?: string;
+    language?: Language;
   },
 ): OutreachPrompt {
   const followUpType = options?.followUpType;
   const regenerateHint = options?.regenerateHint;
+  const language = options?.language;
 
   let prompt: OutreachPrompt;
   switch (type) {
     case "cold-email":
-      prompt = buildColdEmailPrompt(ctx);
+      prompt = buildColdEmailPrompt(ctx, language);
       break;
     case "connect-message":
-      prompt = buildConnectMessagePrompt(ctx);
+      prompt = buildConnectMessagePrompt(ctx, language);
       break;
     case "follow-up":
-      prompt = buildFollowUpPrompt(ctx, followUpType || "no-response");
+      prompt = buildFollowUpPrompt(ctx, followUpType || "no-response", language);
       break;
   }
 
@@ -48,10 +52,10 @@ export function buildOutreachPrompt(
   return prompt;
 }
 
-function buildColdEmailPrompt(ctx: OutreachContext): OutreachPrompt {
+function buildColdEmailPrompt(ctx: OutreachContext, language?: Language): OutreachPrompt {
   const keywordHints = buildKeywordHints(ctx);
   return {
-    system: `You are a professional job seeker writing a cold outreach email. Write in a natural, human tone — warm but professional. Do NOT copy-paste bullet points from the resume or job description. Synthesize the candidate's background and connect it naturally to the role. Keep the email between 150–200 words. Use a genuine, conversational style as if you were a real person emailing the hiring team. Always respond in the same language as the user's input.`,
+    system: `You are a professional job seeker writing a cold outreach email. Write in a natural, human tone — warm but professional. Do NOT copy-paste bullet points from the resume or job description. Synthesize the candidate's background and connect it naturally to the role. Keep the email between 150–200 words. Use a genuine, conversational style as if you were a real person emailing the hiring team. ${langInstruction(language)}`,
     user: `Write a cold email expressing interest in the ${ctx.position} role at ${ctx.company}.
 
 ## Candidate Background (synthesize, do NOT copy-paste):
@@ -76,7 +80,7 @@ Return ONLY valid JSON:
   };
 }
 
-function buildFollowUpPrompt(ctx: OutreachContext, followUpType: FollowUpType): OutreachPrompt {
+function buildFollowUpPrompt(ctx: OutreachContext, followUpType: FollowUpType, language?: Language): OutreachPrompt {
   const scenarios: Record<FollowUpType, {
     label: string;
     instruction: string;
@@ -109,7 +113,7 @@ function buildFollowUpPrompt(ctx: OutreachContext, followUpType: FollowUpType): 
 
   const scenario = scenarios[followUpType];
   return {
-    system: `You are a professional job seeker writing a follow-up email. Write in a natural, human tone — concise and respectful. Do NOT copy-paste from the resume or job description. Keep the email between 80–120 words. Always respond in the same language as the user's input.`,
+    system: `You are a professional job seeker writing a follow-up email. Write in a natural, human tone — concise and respectful. Do NOT copy-paste from the resume or job description. Keep the email between 80–120 words. ${langInstruction(language)}`,
     user: `Write a follow-up email for the ${ctx.position} role at ${ctx.company}.
 
 ## Scenario: ${scenario.label}
@@ -134,9 +138,9 @@ Return ONLY valid JSON:
   };
 }
 
-function buildConnectMessagePrompt(ctx: OutreachContext): OutreachPrompt {
+function buildConnectMessagePrompt(ctx: OutreachContext, language?: Language): OutreachPrompt {
   return {
-    system: `You are a professional writing a short LinkedIn connection request. Keep it under 300 characters. Be genuine and concise. Always respond in the same language as the user's input.`,
+    system: `You are a professional writing a short LinkedIn connection request. Keep it under 300 characters. Be genuine and concise. ${langInstruction(language)}`,
     user: `Write a short LinkedIn connect message for someone interested in the ${ctx.position} role at ${ctx.company}.
 
 ## Candidate Background (reference briefly):

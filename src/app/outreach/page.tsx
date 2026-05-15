@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useStore } from "@/lib/store";
-import { hasApiKey, getSettings } from "@/lib/settingsStore";
+import { hasApiKey, getSettings, getLanguage } from "@/lib/settingsStore";
 import type { FollowUpType } from "@/lib/outreachGenerator";
 import { Loader2, Copy, Check, Sparkles, Mail, Briefcase, MapPin, X, RefreshCw, AlertCircle } from "lucide-react";
 
@@ -91,6 +91,7 @@ export default function OutreachPage() {
         company: company.trim(),
         position: position.trim(),
         type: emailType,
+        language: getLanguage(),
       };
 
       // Attach job context when a job is selected

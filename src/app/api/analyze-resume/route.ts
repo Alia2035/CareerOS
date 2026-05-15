@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { chat } from "@/lib/aiClient";
+import { langInstruction, type Language } from "@/lib/i18n";
 
 export async function POST(req: Request) {
   try {
-    const { jdText, resumeText, apiKey, baseUrl, model } = await req.json();
+    const { jdText, resumeText, apiKey, baseUrl, model, language } = await req.json();
 
     if (!jdText || !resumeText) {
       return NextResponse.json(
@@ -37,7 +38,7 @@ Return JSON in this exact format:
 
     const content = await chat(
       [
-        { role: "system", content: "You are an expert ATS analyzer. Always respond with valid JSON only, no markdown. Always respond in the same language as the user's input." },
+        { role: "system", content: `You are an expert ATS analyzer. Always respond with valid JSON only, no markdown. ${langInstruction(language)}` },
         { role: "user", content: prompt },
       ],
       { apiKey, baseUrl, model },

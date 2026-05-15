@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useStore } from "@/lib/store";
-import { getSettings } from "@/lib/settingsStore";
+import { getSettings, getLanguage } from "@/lib/settingsStore";
 import { Loader2, Sparkles, Target, AlertCircle, Lightbulb, CheckCircle2, Copy } from "lucide-react";
 import type { ResumeAnalysis } from "@/types";
 
@@ -67,6 +67,7 @@ function ResumeAnalyzer() {
       const body: Record<string, unknown> = {
         jdText: jdText.trim(),
         resumeText: resumeText.trim(),
+        language: getLanguage(),
       };
       if (settings?.apiKey) {
         body.apiKey = settings.apiKey;
@@ -109,6 +110,7 @@ function ResumeAnalyzer() {
         jobDescription: jdText.trim(),
         resumeText: resumeText.trim(),
         missingKeywords: result.missingKeywords,
+        language: getLanguage(),
       };
       if (settings?.apiKey) {
         body.apiKey = settings.apiKey;

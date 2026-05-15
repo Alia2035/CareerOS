@@ -17,6 +17,7 @@ export async function POST(req: Request) {
       apiKey,
       baseUrl,
       model,
+      language,
     } = await req.json();
 
     if (!company || !position) {
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
     const prompt = buildOutreachPrompt(type, ctx, {
       followUpType: followUpType as FollowUpType | undefined,
       regenerateHint: regenerateHint || undefined,
+      language,
     });
 
     const content = await chat(

@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { chat } from "@/lib/aiClient";
 import { buildImprovePrompt } from "@/lib/resumeImprover";
+import { langInstruction, type Language } from "@/lib/i18n";
 
 export async function POST(req: Request) {
   try {
-    const { jobDescription, resumeText, missingKeywords, apiKey, baseUrl, model } = await req.json();
+    const { jobDescription, resumeText, missingKeywords, apiKey, baseUrl, model, language } = await req.json();
 
     if (!jobDescription || !resumeText) {
       return NextResponse.json(
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
 
     const content = await chat(
       [
-        { role: "system", content: "You are an expert resume writer. Always respond with the improved resume text only, no explanations. Always respond in the same language as the user's input." },
+        { role: "system", content: `You are an expert resume writer. Always respond with the improved resume text only, no explanations. ${langInstruction(language)}` },
         { role: "user", content: prompt },
       ],
       { apiKey, baseUrl, model },

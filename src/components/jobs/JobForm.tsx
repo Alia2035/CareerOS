@@ -6,7 +6,7 @@ import type { Job, JobStatus } from "@/types";
 import type { CV } from "@/types/cv";
 import { getCVs } from "@/lib/storage";
 import { getCachedUrl, setCachedUrl, isOnCooldown } from "@/lib/urlCache";
-import { getSettings } from "@/lib/settingsStore";
+import { getSettings, getLanguage } from "@/lib/settingsStore";
 import CVLibraryModal from "./CVLibraryModal";
 import { X, Scan, FileText, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 
@@ -114,6 +114,7 @@ export default function JobForm({ job, onClose }: Props) {
           apiKey: settings.apiKey,
           baseUrl: settings.baseUrl || undefined,
           model: settings.model || undefined,
+          language: getLanguage(),
         }),
       });
       const data = await res.json();

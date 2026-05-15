@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import type { CV } from "@/types/cv";
 import { getCVs } from "@/lib/storage";
-import { getAIConfig } from "@/lib/settingsStore";
+import { getAIConfig, getLanguage } from "@/lib/settingsStore";
 import { generateJobSearchPlan, type JobFinderResult } from "@/lib/jobFinder";
 import { X, Search, Loader2, AlertCircle, Copy, CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 
@@ -106,6 +106,7 @@ export default function JobFinderModal({ onClose }: Props) {
           keywords: keywords.trim(),
         },
         config,
+        getLanguage(),
       );
       setResult(plan);
     } catch {

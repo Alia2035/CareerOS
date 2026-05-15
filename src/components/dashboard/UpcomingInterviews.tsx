@@ -2,15 +2,17 @@
 
 import { useMemo } from "react";
 import { useStore } from "@/lib/store";
+import { getLanguage } from "@/lib/settingsStore";
 import { Calendar, Clock } from "lucide-react";
 
 function daysLabel(dateStr: string): string {
   const now = new Date();
   const target = new Date(dateStr + "T00:00:00");
   const diff = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  if (diff === 0) return "Today";
-  if (diff === 1) return "Tomorrow";
-  return `In ${diff} days`;
+  const isZh = getLanguage() === "zh";
+  if (diff === 0) return isZh ? "今天" : "Today";
+  if (diff === 1) return isZh ? "明天" : "Tomorrow";
+  return isZh ? `${diff}天后` : `In ${diff} days`;
 }
 
 export default function UpcomingInterviews() {

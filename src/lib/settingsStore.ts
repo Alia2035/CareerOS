@@ -4,11 +4,14 @@ const SETTINGS_KEY = "career-os-settings";
 
 type Provider = "deepseek" | "openai" | "other";
 
+export type Language = "en" | "zh";
+
 export interface UserSettings {
   provider: Provider;
   apiKey: string;
   baseUrl: string;
   model: string;
+  language: Language;
 }
 
 const providerDefaults: Record<Provider, { baseUrl: string; model: string }> = {
@@ -53,4 +56,9 @@ export function getAIConfig(): AIClientConfig | null {
     baseUrl: settings.baseUrl || undefined,
     model: settings.model || undefined,
   };
+}
+
+export function getLanguage(): Language {
+  const settings = getSettings();
+  return settings?.language || "en";
 }

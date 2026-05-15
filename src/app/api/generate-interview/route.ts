@@ -15,6 +15,7 @@ export async function POST(req: Request) {
       apiKey,
       baseUrl,
       model,
+      language,
     } = await req.json();
 
     if (!company || !position) {
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
       missingKeywords: missingKeywords || [],
     };
 
-    const prompt = buildQuestionsPrompt(ctx);
+    const prompt = buildQuestionsPrompt(ctx, language);
     const content = await chat(
       [
         { role: "system", content: prompt.system },
