@@ -4,10 +4,11 @@ import { useState, useEffect } from "react";
 import { useStore } from "@/lib/store";
 import type { Job, JobStatus } from "@/types";
 import type { CV } from "@/types/cv";
-import { parseJobUrl } from "@/lib/jobParser";
 import { getCVs } from "@/lib/storage";
+import { getCachedUrl, setCachedUrl, isOnCooldown } from "@/lib/urlCache";
+import { getSettings } from "@/lib/settingsStore";
 import CVLibraryModal from "./CVLibraryModal";
-import { X, Scan, FileText } from "lucide-react";
+import { X, Scan, FileText, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 
 interface Props {
   job?: Job;
@@ -42,7 +43,9 @@ export default function JobForm({ job, onClose }: Props) {
     missingKeywords: job?.missingKeywords || [],
   });
 
+  const [parsing, setParsing] = useState(false);
   const [parseMessage, setParseMessage] = useState<string | null>(null);
+  const [parseError, setParseError] = useState(false);
 
   const [cvList, setCVList] = useState<CV[]>([]);
   const [selectedCVId, setSelectedCVId] = useState("");
@@ -63,13 +66,100 @@ export default function JobForm({ job, onClose }: Props) {
     }
   };
 
-  const handleParseUrl = () => {
-    if (!form.jobUrl.trim()) return;
-    const result = parseJobUrl(form.jobUrl);
-    if (result.source) {
-      setForm((f) => ({ ...f, source: result.source! }));
+  const handleParseUrl = async () => {
+    const url = form.jobUrl.trim();
+    if (!url) return;
+    if (parsing) return;
+
+    setParseMessage(null);
+    setParseError(false);
+
+    // Check cache
+    const cached = getCachedUrl(url);
+    if (cached) {
+      setForm((f) => ({
+        ...f,
+        company: cached.company,
+        position: cached.position,
+        location: cached.location,
+        source: cached.source || f.source,
+        jobDescription: cached.jobDescription,
+        salary: cached.salary || f.salary,
+      }));
+      setParseMessage("Loaded from cache. You can edit all fields before saving.");
+      return;
     }
-    setParseMessage(result.message);
+
+    // Check cooldown
+    if (isOnCooldown(url)) {
+      setParseError(true);
+      setParseMessage("This URL was recently parsed. Please wait a moment before retrying.");
+      return;
+    }
+
+    setParsing(true);
+    try {
+      const settings = getSettings();
+      if (!settings?.apiKey) {
+        setParseError(true);
+        setParseMessage("Please add your API key in Settings first.");
+        return;
+      }
+
+      const res = await fetch("/api/parse-job-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url,
+          apiKey: settings.apiKey,
+          baseUrl: settings.baseUrl || undefined,
+          model: settings.model || undefined,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setParseError(true);
+        setParseMessage(data.error || "Failed to parse URL. Please paste job details manually.");
+        return;
+      }
+
+      if (!data.extracted) {
+        setParseError(true);
+        setParseMessage(data.error || "Automatic extraction failed. Please paste job details manually.");
+        // Still fill what we have (source, partial jdText)
+        if (data.source) setForm((f) => ({ ...f, source: data.source }));
+        if (data.jobDescription) setForm((f) => ({ ...f, jobDescription: data.jobDescription }));
+        return;
+      }
+
+      // Cache successful result
+      setCachedUrl(url, {
+        company: data.company,
+        position: data.position,
+        location: data.location,
+        source: data.source,
+        jobDescription: data.jobDescription,
+        salary: data.salary,
+        jobUrl: url,
+      });
+
+      setForm((f) => ({
+        ...f,
+        company: data.company || f.company,
+        position: data.position || f.position,
+        location: data.location || f.location,
+        source: data.source || f.source,
+        jobDescription: data.jobDescription || f.jobDescription,
+        salary: data.salary || f.salary,
+      }));
+      setParseMessage("URL parsed successfully. Please verify and edit as needed.");
+    } catch {
+      setParseError(true);
+      setParseMessage("Network error. Please check your connection and try again, or paste job details manually.");
+    } finally {
+      setParsing(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -226,14 +316,30 @@ export default function JobForm({ job, onClose }: Props) {
               <button
                 type="button"
                 onClick={handleParseUrl}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-600 hover:text-primary-600 border border-gray-200 hover:border-primary-300 rounded-lg transition-colors shrink-0"
+                disabled={parsing}
+                className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-600 hover:text-primary-600 border border-gray-200 hover:border-primary-300 rounded-lg transition-colors shrink-0 disabled:opacity-50"
               >
-                <Scan size={14} />
-                Parse URL
+                {parsing ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Scan size={14} />
+                )}
+                {parsing ? "Parsing..." : "Parse URL"}
               </button>
             </div>
             {parseMessage && (
-              <p className="mt-1.5 text-xs text-gray-400">{parseMessage}</p>
+              <p
+                className={`mt-1.5 text-xs flex items-center gap-1.5 ${
+                  parseError ? "text-red-600" : "text-gray-500"
+                }`}
+              >
+                {parseError ? (
+                  <AlertCircle size={12} />
+                ) : (
+                  <CheckCircle2 size={12} className="text-green-500" />
+                )}
+                {parseMessage}
+              </p>
             )}
           </div>
 
