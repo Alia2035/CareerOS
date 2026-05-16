@@ -16,7 +16,7 @@ interface Props {
   onClose: () => void;
 }
 
-const statuses: JobStatus[] = ["Saved", "Applied", "Interview", "Offer", "Rejected"];
+const statuses: JobStatus[] = ["Saved", "Applied", "Interview", "Offer", "Rejected", "Other"];
 
 export default function JobForm({ job, onClose }: Props) {
   const addJob = useStore((s) => s.addJob);
@@ -39,6 +39,8 @@ export default function JobForm({ job, onClose }: Props) {
     interviewDate: job?.interviewDate || "",
     interviewTime: job?.interviewTime || "",
     interviewStage: job?.interviewStage || "",
+    customStatus: job?.customStatus || "",
+    customStage: job?.customStage || "",
     resumeText: job?.resumeText || "",
     resumeFileName: job?.resumeFileName || "",
     atsScore: job?.atsScore ?? null,
@@ -256,6 +258,17 @@ export default function JobForm({ job, onClose }: Props) {
             </div>
           </div>
 
+          {form.status === "Other" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Custom Status</label>
+              <input
+                value={form.customStatus}
+                onChange={(e) => setForm((f) => ({ ...f, customStatus: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
+              />
+            </div>
+          )}
+
           {/* Interview Stage — only shown when status is Interview */}
           {form.status === "Interview" && (
             <div>
@@ -263,7 +276,7 @@ export default function JobForm({ job, onClose }: Props) {
                 {t("Interview Stage")}
               </label>
               <div className="flex flex-wrap gap-2 mb-2">
-                {(["Assessment", "First Interview", "Second Interview", "Final Interview"] as const).map((stage) => (
+                {(["Assessment", "First Interview", "Second Interview", "Final Interview", "Other"] as const).map((stage) => (
                   <button
                     key={stage}
                     type="button"
@@ -278,13 +291,15 @@ export default function JobForm({ job, onClose }: Props) {
                   </button>
                 ))}
               </div>
-              <input
-                type="text"
-                value={form.interviewStage}
-                onChange={(e) => setForm((f) => ({ ...f, interviewStage: e.target.value }))}
-                placeholder={t("Custom") + "..."}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
-              />
+              {form.interviewStage === "Other" && (
+                <input
+                  type="text"
+                  value={form.customStage}
+                  onChange={(e) => setForm((f) => ({ ...f, customStage: e.target.value }))}
+                  placeholder={t("Custom") + "..."}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
+                />
+              )}
             </div>
           )}
 

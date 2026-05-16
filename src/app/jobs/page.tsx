@@ -17,6 +17,7 @@ const statusFilters: { label: string; value: JobStatus | "All" }[] = [
   { label: "Interview", value: "Interview" },
   { label: "Offer", value: "Offer" },
   { label: "Rejected", value: "Rejected" },
+  { label: "Other", value: "Other" },
 ];
 
 const atsFilters: { label: string; value: AtsFilter }[] = [
@@ -53,7 +54,7 @@ export default function JobsPage() {
   const counts = useMemo(
     () =>
       Object.fromEntries(
-        (["Saved", "Applied", "Interview", "Offer", "Rejected"] as JobStatus[]).map((s) => [
+        (["Saved", "Applied", "Interview", "Offer", "Rejected", "Other"] as JobStatus[]).map((s) => [
           s,
           jobs.filter((j) => j.status === s).length,
         ])

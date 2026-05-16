@@ -75,6 +75,7 @@ const translations: TranslationMap = {
   "Second Interview": { en: "Second Interview", zh: "二面" },
   "Final Interview": { en: "Final Interview", zh: "终面" },
   "Custom": { en: "Custom", zh: "自定义" },
+  "Other": { en: "Other", zh: "其他" },
   "Salary": { en: "Salary", zh: "薪资" },
   "Source": { en: "Source", zh: "来源" },
   "Job URL": { en: "Job URL", zh: "职位链接" },

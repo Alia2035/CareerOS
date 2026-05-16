@@ -1,4 +1,4 @@
-export type JobStatus = "Saved" | "Applied" | "Interview" | "Offer" | "Rejected";
+export type JobStatus = "Saved" | "Applied" | "Interview" | "Offer" | "Rejected" | "Other";
 
 export interface Job {
   id: string;
@@ -7,6 +7,7 @@ export interface Job {
   location: string;
   source: string;
   status: JobStatus;
+  customStatus: string;
   appliedDate: string;
   followUpDate: string | null;
   deadlineDate: string;
@@ -21,6 +22,7 @@ export interface Job {
   matchedKeywords: string[];
   missingKeywords: string[];
   interviewStage: string;
+  customStage: string;
   notes: string;
   createdAt: string;
   updatedAt: string;

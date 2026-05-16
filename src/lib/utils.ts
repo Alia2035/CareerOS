@@ -42,6 +42,7 @@ export function getStatusColor(status: string): string {
     Interview: "bg-yellow-100 text-yellow-700",
     Offer: "bg-green-100 text-green-700",
     Rejected: "bg-red-100 text-red-700",
+    Other: "bg-violet-100 text-violet-700",
   };
   return colors[status] || colors.Saved;
 }

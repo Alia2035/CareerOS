@@ -22,6 +22,8 @@ const emptyJobDefaults = {
   matchedKeywords: [] as string[],
   missingKeywords: [] as string[],
   interviewStage: "",
+  customStatus: "",
+  customStage: "",
 };
 
 export const mockJobs: Job[] = [
