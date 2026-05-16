@@ -21,6 +21,7 @@ const emptyJobDefaults = {
   atsScore: null as number | null,
   matchedKeywords: [] as string[],
   missingKeywords: [] as string[],
+  interviewStage: "",
 };
 
 export const mockJobs: Job[] = [

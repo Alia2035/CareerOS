@@ -20,6 +20,7 @@ export interface Job {
   atsScore: number | null;
   matchedKeywords: string[];
   missingKeywords: string[];
+  interviewStage: string;
   notes: string;
   createdAt: string;
   updatedAt: string;

@@ -68,6 +68,11 @@ export default function JobCard({ job, isExpanded, onToggle }: Props) {
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${getAtsColor(job.atsScore)}`}>
               {job.atsScore !== null ? `ATS ${job.atsScore}%` : t("Not analyzed")}
             </span>
+            {job.interviewStage && (
+              <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-700">
+                {t(job.interviewStage) !== job.interviewStage ? t(job.interviewStage) : job.interviewStage}
+              </span>
+            )}
             <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${getStatusColor(job.status)}`}>
               {job.status}
             </span>
