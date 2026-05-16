@@ -12,6 +12,7 @@ const DEFAULT_MODEL = "deepseek-chat";
 export async function chat(
   messages: { role: "system" | "user"; content: string }[],
   config: AIClientConfig,
+  temperature?: number,
 ): Promise<string> {
   const client = new OpenAI({
     apiKey: config.apiKey,
@@ -21,7 +22,7 @@ export async function chat(
   const response = await client.chat.completions.create({
     model: config.model || DEFAULT_MODEL,
     messages,
-    temperature: 0.7,
+    temperature: temperature ?? 0.7,
     max_tokens: 2000,
   });
 

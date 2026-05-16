@@ -1,7 +1,35 @@
 import { NextResponse } from "next/server";
 import { chat } from "@/lib/aiClient";
-import { analyzeATS } from "@/lib/atsAnalyzer";
+import { computeMatch, type JDExtraction, type ResumeExtraction } from "@/lib/atsAnalyzer";
 import { langInstruction, type Language } from "@/lib/i18n";
+
+function hashKey(jd: string, resume: string): string {
+  let hash = 5381;
+  const str = jd + "|||" + resume;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) + str.charCodeAt(i);
+    hash = hash & hash;
+  }
+  return hash.toString(36);
+}
+
+interface CacheEntry {
+  jd: JDExtraction;
+  resume: ResumeExtraction;
+  suggestions: string[];
+}
+
+const extractionCache = new Map<string, CacheEntry>();
+
+function parseAIJson(content: string): Record<string, unknown> {
+  let json = content;
+  if (json.includes("```json")) {
+    json = json.split("```json")[1].split("```")[0];
+  } else if (json.includes("```")) {
+    json = json.split("```")[1].split("```")[0];
+  }
+  return JSON.parse(json.trim());
+}
 
 export async function POST(req: Request) {
   try {
@@ -21,55 +49,76 @@ export async function POST(req: Request) {
       );
     }
 
-    // Deterministic keyword matching — same input always yields the same score
-    const ats = analyzeATS(jdText, resumeText);
+    // Deterministic cache — same JD + Resume always reuses the same extraction
+    const key = hashKey(jdText, resumeText);
+    let cached = extractionCache.get(key);
 
-    // AI only provides optimization suggestions based on the deterministic results
-    const prompt = `You are an expert career coach. A deterministic ATS scan has already been performed on the candidate's resume against the job description below. Do NOT recalculate or question the score — use it as given.
+    if (!cached) {
+      const prompt = `You are an expert resume analyzer. Extract structured, canonical information from both the job description and resume below.
 
-ATS Score: ${ats.atsScore}/100
-Matched Keywords: ${ats.matchedKeywords.join(", ") || "(none)"}
-Missing Keywords: ${ats.missingKeywords.join(", ") || "(none)"}
+## Rules
+- Normalize synonyms to a SINGLE canonical form (e.g. "data analysis" / "data analytics" → "data analysis"; "React.js" / "ReactJS" → "React"; "K8s" / "Kubernetes" → "Kubernetes"; "ML" / "Machine Learning" → "Machine Learning"; "CI/CD" / "CI CD" → "CI/CD")
+- Be consistent — if you normalize "React.js" to "React" in JD, use "React" in Resume too
+- List each skill/tool/requirement only once (deduplicate)
+- Use the EXACT same canonical name across both JD and Resume sections
 
-Job Description:
+## Job Description
 ${jdText}
 
-Resume:
+## Resume
 ${resumeText}
 
-Return ONLY valid JSON (no markdown, no extra text) in this format:
+Return ONLY valid JSON (no markdown, no extra text):
 {
-  "suggestions": ["actionable suggestion 1", "actionable suggestion 2", ...]
+  "jd": {
+    "skills": ["canonical skill 1", "canonical skill 2"],
+    "tools": ["canonical tool 1"],
+    "requirements": ["degree requirement", "years of experience", "certification"]
+  },
+  "resume": {
+    "skills": ["canonical skill 1"],
+    "tools": ["canonical tool 1"],
+    "experience": ["relevant experience keyword 1"]
+  },
+  "suggestions": ["actionable suggestion 1", "actionable suggestion 2"]
 }
 
-Provide 4-6 specific, actionable suggestions for improving the resume to better match the job description. Focus on incorporating the missing keywords naturally and strengthening the presentation of existing skills.`;
+Provide 4-6 specific, actionable suggestions in the "suggestions" array.`;
 
-    const content = await chat(
-      [
-        { role: "system", content: `You are an expert career coach and resume writer. Always respond with valid JSON only, no markdown. ${langInstruction(language)}` },
-        { role: "user", content: prompt },
-      ],
-      { apiKey, baseUrl, model },
-    );
+      const content = await chat(
+        [
+          {
+            role: "system",
+            content: `You are an expert resume analyzer. Always respond with valid JSON only, no markdown. Use consistent canonical names for skills and tools across both JD and Resume sections. ${langInstruction(language)}`,
+          },
+          { role: "user", content: prompt },
+        ],
+        { apiKey, baseUrl, model },
+        0, // temperature=0 for maximum consistency
+      );
 
-    let json = content;
-    if (json.includes("```json")) {
-      json = json.split("```json")[1].split("```")[0];
-    } else if (json.includes("```")) {
-      json = json.split("```")[1].split("```")[0];
+      const result = parseAIJson(content);
+
+      cached = {
+        jd: (result.jd || { skills: [], tools: [], requirements: [] }) as JDExtraction,
+        resume: (result.resume || { skills: [], tools: [], experience: [] }) as ResumeExtraction,
+        suggestions: (result.suggestions || []) as string[],
+      };
+      extractionCache.set(key, cached);
     }
 
-    const result = JSON.parse(json.trim());
+    // Deterministic matching on the structured extraction
+    const match = computeMatch(cached.jd, cached.resume);
 
     return NextResponse.json({
       id: Math.random().toString(36).slice(2, 11),
       jobId: null,
       jdText,
       resumeText,
-      atsScore: ats.atsScore,
-      matchedKeywords: ats.matchedKeywords,
-      missingKeywords: ats.missingKeywords,
-      suggestions: result.suggestions || [],
+      atsScore: match.atsScore,
+      matchedKeywords: match.matchedKeywords,
+      missingKeywords: match.missingKeywords,
+      suggestions: cached.suggestions,
       createdAt: new Date().toISOString().split("T")[0],
     });
   } catch (error) {
