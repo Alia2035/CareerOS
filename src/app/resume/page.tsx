@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useStore } from "@/lib/store";
 import { getSettings, getLanguage } from "@/lib/settingsStore";
@@ -139,6 +139,30 @@ function ResumeAnalyzer() {
     setCopied(which);
     setTimeout(() => setCopied(null), 2000);
   };
+
+  const highlightedImproved = useMemo(() => {
+    if (!improvedResume) return null;
+    const origNorm = new Set(
+      resumeText
+        .split("\n")
+        .map((l) => l.trim().toLowerCase().replace(/\s+/g, " "))
+        .filter((l) => l.length > 0),
+    );
+    const lines = improvedResume.split("\n");
+    return lines.map((line, i) => {
+      const norm = line.trim().toLowerCase().replace(/\s+/g, " ");
+      const isNew = norm.length > 0 && !origNorm.has(norm);
+      return (
+        <span
+          key={i}
+          className={isNew ? "bg-green-50 text-green-900 rounded" : undefined}
+        >
+          {line}
+          {i < lines.length - 1 ? "\n" : ""}
+        </span>
+      );
+    });
+  }, [resumeText, improvedResume]);
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -361,9 +385,9 @@ function ResumeAnalyzer() {
                   {copied === "improved" ? t("Copied!") : t("Copy")}
                 </button>
               </div>
-              <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed max-h-96 overflow-y-auto">
-                {improvedResume}
-              </pre>
+              <div className="text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed max-h-96 overflow-y-auto">
+                {highlightedImproved}
+              </div>
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { chat } from "@/lib/aiClient";
+import { analyzeATS } from "@/lib/atsAnalyzer";
 import { langInstruction, type Language } from "@/lib/i18n";
 
 export async function POST(req: Request) {
@@ -20,7 +21,15 @@ export async function POST(req: Request) {
       );
     }
 
-    const prompt = `You are an expert ATS (Applicant Tracking System) analyzer and career coach. Analyze the following job description and resume. Return ONLY valid JSON (no markdown, no extra text).
+    // Deterministic keyword matching — same input always yields the same score
+    const ats = analyzeATS(jdText, resumeText);
+
+    // AI only provides optimization suggestions based on the deterministic results
+    const prompt = `You are an expert career coach. A deterministic ATS scan has already been performed on the candidate's resume against the job description below. Do NOT recalculate or question the score — use it as given.
+
+ATS Score: ${ats.atsScore}/100
+Matched Keywords: ${ats.matchedKeywords.join(", ") || "(none)"}
+Missing Keywords: ${ats.missingKeywords.join(", ") || "(none)"}
 
 Job Description:
 ${jdText}
@@ -28,17 +37,16 @@ ${jdText}
 Resume:
 ${resumeText}
 
-Return JSON in this exact format:
+Return ONLY valid JSON (no markdown, no extra text) in this format:
 {
-  "atsScore": <number 0-100>,
-  "matchedKeywords": ["keyword1", "keyword2", ...],
-  "missingKeywords": ["keyword1", "keyword2", ...],
-  "suggestions": ["suggestion1", "suggestion2", ...]
-}`;
+  "suggestions": ["actionable suggestion 1", "actionable suggestion 2", ...]
+}
+
+Provide 4-6 specific, actionable suggestions for improving the resume to better match the job description. Focus on incorporating the missing keywords naturally and strengthening the presentation of existing skills.`;
 
     const content = await chat(
       [
-        { role: "system", content: `You are an expert ATS analyzer. Always respond with valid JSON only, no markdown. ${langInstruction(language)}` },
+        { role: "system", content: `You are an expert career coach and resume writer. Always respond with valid JSON only, no markdown. ${langInstruction(language)}` },
         { role: "user", content: prompt },
       ],
       { apiKey, baseUrl, model },
@@ -58,9 +66,9 @@ Return JSON in this exact format:
       jobId: null,
       jdText,
       resumeText,
-      atsScore: result.atsScore || 50,
-      matchedKeywords: result.matchedKeywords || [],
-      missingKeywords: result.missingKeywords || [],
+      atsScore: ats.atsScore,
+      matchedKeywords: ats.matchedKeywords,
+      missingKeywords: ats.missingKeywords,
       suggestions: result.suggestions || [],
       createdAt: new Date().toISOString().split("T")[0],
     });
