@@ -13,17 +13,19 @@ export async function chat(
   messages: { role: "system" | "user"; content: string }[],
   config: AIClientConfig,
   temperature?: number,
+  maxTokens?: number,
 ): Promise<string> {
   const client = new OpenAI({
     apiKey: config.apiKey,
     baseURL: config.baseUrl || DEFAULT_BASE_URL,
+    dangerouslyAllowBrowser: true,
   });
 
   const response = await client.chat.completions.create({
     model: config.model || DEFAULT_MODEL,
     messages,
     temperature: temperature ?? 0.7,
-    max_tokens: 2000,
+    max_tokens: maxTokens ?? 2000,
   });
 
   return response.choices[0]?.message?.content || "";

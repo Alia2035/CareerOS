@@ -109,8 +109,9 @@ export default function JobFinderModal({ onClose }: Props) {
         getLanguage(),
       );
       setResult(plan);
-    } catch {
-      setError("Failed to generate job search plan. Please check your API key and try again.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      setError(msg);
     } finally {
       setGenerating(false);
     }

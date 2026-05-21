@@ -104,14 +104,22 @@ export async function generateJobSearchPlan(
   config: AIClientConfig,
   language?: Language,
 ): Promise<JobFinderResult> {
-  const content = await chat(
-    [
-      { role: "system", content: buildSystemPrompt(language) },
-      { role: "user", content: buildUserPrompt(input) },
-    ],
-    config,
-  );
+  let content: string;
+  try {
+    content = await chat(
+      [
+        { role: "system", content: buildSystemPrompt(language) },
+        { role: "user", content: buildUserPrompt(input) },
+      ],
+      config,
+      undefined,
+      4000,
+    );
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    throw new Error(`API request failed: ${msg}`);
+  }
   const result = parseJobFinderResponse(content);
-  if (!result) throw new Error("Failed to parse AI response");
+  if (!result) throw new Error("Invalid response format — the AI could not produce a valid job search plan. Try again.");
   return result;
 }
