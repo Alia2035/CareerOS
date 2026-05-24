@@ -6,8 +6,7 @@ import type { JobStatus } from "@/types";
 import { filterJobs, sortJobs, type AtsFilter, type SortBy } from "@/lib/jobFilters";
 import JobCard from "@/components/jobs/JobCard";
 import JobForm from "@/components/jobs/JobForm";
-import JobFinderModal from "@/components/jobs/JobFinderModal";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
 const statusFilters: { label: string; value: JobStatus | "All" }[] = [
@@ -43,7 +42,7 @@ export default function JobsPage() {
   const [atsFilter, setAtsFilter] = useState<AtsFilter>("All");
   const [sortBy, setSortBy] = useState<SortBy>("Default");
   const [showForm, setShowForm] = useState(false);
-  const [showFinder, setShowFinder] = useState(false);
+
   const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
@@ -85,13 +84,7 @@ export default function JobsPage() {
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowFinder(true)}
-            className="flex items-center gap-2 px-4 py-2 text-primary-600 hover:text-primary-700 border border-primary-200 hover:border-primary-300 bg-white rounded-lg text-sm font-medium transition-colors"
-          >
-            <Search size={16} />
-            {t("Find Jobs with AI")}
-          </button>
+
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
@@ -149,7 +142,7 @@ export default function JobsPage() {
       </div>
 
       {showForm && <JobForm onClose={() => setShowForm(false)} />}
-      {showFinder && <JobFinderModal onClose={() => setShowFinder(false)} />}
+
     </div>
   );
 }

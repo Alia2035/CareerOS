@@ -59,7 +59,7 @@ const translations: TranslationMap = {
   "Job Tracker": { en: "Job Tracker", zh: "职位追踪" },
   "Add Job": { en: "Add Job", zh: "添加职位" },
   "Edit Job": { en: "Edit Job", zh: "编辑职位" },
-  "Find Jobs with AI": { en: "Find Jobs with AI", zh: "AI 职位搜索" },
+
   "Company": { en: "Company", zh: "公司" },
   "Position": { en: "Position", zh: "职位" },
   "Location": { en: "Location", zh: "地点" },
