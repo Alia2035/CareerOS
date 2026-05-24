@@ -1,6 +1,16 @@
 import { NextResponse } from "next/server";
 import { chat } from "@/lib/aiClient";
-import { buildOutreachPrompt, type FollowUpType } from "@/lib/outreachGenerator";
+import { buildOutreachPrompt, detectHRVoice, buildCorrectionHint, type FollowUpType } from "@/lib/outreachGenerator";
+
+function extractJSON(raw: string): Record<string, unknown> {
+  let json = raw;
+  if (json.includes("```json")) {
+    json = json.split("```json")[1].split("```")[0];
+  } else if (json.includes("```")) {
+    json = json.split("```")[1].split("```")[0];
+  }
+  return JSON.parse(json.trim());
+}
 
 export async function POST(req: Request) {
   try {
@@ -64,14 +74,30 @@ export async function POST(req: Request) {
       { apiKey, baseUrl, model },
     );
 
-    let json = content;
-    if (json.includes("```json")) {
-      json = json.split("```json")[1].split("```")[0];
-    } else if (json.includes("```")) {
-      json = json.split("```")[1].split("```")[0];
-    }
+    const result = extractJSON(content);
 
-    const result = JSON.parse(json.trim());
+    // Validation: check for HR/recruiter voice and retry once if detected
+    if (detectHRVoice(String(result.body || ""))) {
+      const correctionPrompt = buildOutreachPrompt(type, ctx, {
+        followUpType: followUpType as FollowUpType | undefined,
+        regenerateHint: buildCorrectionHint(),
+        language,
+      });
+
+      const correctedContent = await chat(
+        [
+          { role: "system", content: correctionPrompt.system },
+          { role: "user", content: correctionPrompt.user },
+        ],
+        { apiKey, baseUrl, model },
+      );
+
+      const correctedResult = extractJSON(correctedContent);
+      return NextResponse.json({
+        subject: correctedResult.subject || "",
+        body: correctedResult.body || "Failed to generate content.",
+      });
+    }
 
     return NextResponse.json({
       subject: result.subject || "",
