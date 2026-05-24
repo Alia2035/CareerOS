@@ -6,7 +6,7 @@ import type { JobStatus } from "@/types";
 import { filterJobs, sortJobs, type AtsFilter, type SortBy } from "@/lib/jobFilters";
 import JobCard from "@/components/jobs/JobCard";
 import JobForm from "@/components/jobs/JobForm";
-import { Plus } from "lucide-react";
+import { Plus, Search, X } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
 const statusFilters: { label: string; value: JobStatus | "All" }[] = [
@@ -42,13 +42,22 @@ export default function JobsPage() {
   const [atsFilter, setAtsFilter] = useState<AtsFilter>("All");
   const [sortBy, setSortBy] = useState<SortBy>("Default");
   const [showForm, setShowForm] = useState(false);
-
+  const [searchQuery, setSearchQuery] = useState("");
   const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    const filtered_ = filterJobs(jobs, statusFilter, atsFilter);
+    let filtered_ = filterJobs(jobs, statusFilter, atsFilter);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      filtered_ = filtered_.filter(
+        (j) =>
+          j.position.toLowerCase().includes(q) ||
+          j.company.toLowerCase().includes(q) ||
+          j.location.toLowerCase().includes(q),
+      );
+    }
     return sortJobs(filtered_, sortBy);
-  }, [jobs, statusFilter, atsFilter, sortBy]);
+  }, [jobs, statusFilter, atsFilter, sortBy, searchQuery]);
 
   const counts = useMemo(
     () =>
@@ -84,7 +93,24 @@ export default function JobsPage() {
           ))}
         </div>
         <div className="flex items-center gap-2">
-
+          <div className="relative">
+            <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search jobs..."
+              className="w-48 pl-8 pr-7 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
