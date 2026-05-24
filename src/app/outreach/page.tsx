@@ -5,6 +5,8 @@ import { useStore } from "@/lib/store";
 import { hasApiKey, getSettings, getLanguage } from "@/lib/settingsStore";
 import type { FollowUpType } from "@/lib/outreachGenerator";
 import { useT } from "@/lib/i18n";
+import JobSelector from "@/components/jobs/JobSelector";
+import type { Job } from "@/types";
 import { Loader2, Copy, Check, Sparkles, Mail, Briefcase, MapPin, X, RefreshCw, AlertCircle } from "lucide-react";
 
 type EmailType = "cold-email" | "connect-message" | "follow-up";
@@ -172,50 +174,40 @@ export default function OutreachPage() {
 
       {/* Job Selector */}
       <div className="bg-white rounded-xl border border-gray-100 p-5">
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          {t("Select a Job (optional)")}
-        </label>
-        <select
-          value={selectedJobId}
-          onChange={(e) => handleJobSelect(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
-        >
-          <option value="">— Manual input —</option>
-          {jobs.map((job) => (
-            <option key={job.id} value={job.id}>
-              {job.company} — {job.position}
-            </option>
-          ))}
-        </select>
-
-        {selectedJob && (
-          <div className="mt-3 flex items-start justify-between bg-primary-50 border border-primary-100 rounded-lg p-3">
-            <div className="space-y-1 text-sm">
-              <div className="flex items-center gap-2 font-medium text-gray-900">
-                <Briefcase size={14} className="text-primary-500" />
-                {selectedJob.position}
+        <JobSelector
+          jobs={jobs}
+          selectedJobId={selectedJobId}
+          onSelect={handleJobSelect}
+          onClear={handleClearJob}
+          placeholder="Search jobs by title or company..."
+          label={t("Select a Job (optional)")}
+          hint="Selecting a job auto-fills company and position, and uses its JD/resume for personalized email generation."
+          renderSelectedJob={(job: Job, onClear: () => void) => (
+            <div className="flex items-start justify-between bg-primary-50 border border-primary-100 rounded-lg p-3">
+              <div className="space-y-1 text-sm">
+                <div className="flex items-center gap-2 font-medium text-gray-900">
+                  <Briefcase size={14} className="text-primary-500" />
+                  {job.position}
+                </div>
+                <div className="flex items-center gap-2 text-gray-500">
+                  <MapPin size={14} />
+                  {job.company}
+                </div>
+                {job.jobDescription && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    JD: {job.jobDescription.slice(0, 100)}...
+                  </p>
+                )}
               </div>
-              <div className="flex items-center gap-2 text-gray-500">
-                <MapPin size={14} />
-                {selectedJob.company}
-              </div>
-              {selectedJob.jobDescription && (
-                <p className="text-xs text-gray-400 mt-1">
-                  JD: {selectedJob.jobDescription.slice(0, 100)}...
-                </p>
-              )}
+              <button
+                onClick={onClear}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X size={16} />
+              </button>
             </div>
-            <button
-              onClick={handleClearJob}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <X size={16} />
-            </button>
-          </div>
-        )}
-        <p className="mt-1.5 text-xs text-gray-400">
-          Selecting a job auto-fills company and position, and uses its JD/resume for personalized email generation.
-        </p>
+          )}
+        />
       </div>
 
       {/* Email Generator Form */}

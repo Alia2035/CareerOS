@@ -7,6 +7,7 @@ import { getSettings, getLanguage } from "@/lib/settingsStore";
 import { useT } from "@/lib/i18n";
 import { Loader2, Sparkles, Target, AlertCircle, Lightbulb, CheckCircle2, Copy } from "lucide-react";
 import type { ResumeAnalysis } from "@/types";
+import JobSelector from "@/components/jobs/JobSelector";
 
 function ResumeAnalyzer() {
   const searchParams = useSearchParams();
@@ -54,6 +55,13 @@ function ResumeAnalyzer() {
       setJdText(job.jobDescription || "");
       setResumeText(job.resumeText || "");
     }
+  };
+
+  const handleClearJob = () => {
+    setSelectedJobId("");
+    setJdText("");
+    setResumeText("");
+    setResult(null);
   };
 
   const handleAnalyze = async () => {
@@ -169,24 +177,15 @@ function ResumeAnalyzer() {
     <div className="space-y-6 max-w-4xl">
       {/* Job Selector */}
       <div className="bg-white rounded-xl border border-gray-100 p-5">
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          {t("Select a Job (optional)")}
-        </label>
-        <select
-          value={selectedJobId}
-          onChange={(e) => handleJobSelect(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
-        >
-          <option value="">— Manual input —</option>
-          {jobs.map((job) => (
-            <option key={job.id} value={job.id}>
-              {job.company} — {job.position}
-            </option>
-          ))}
-        </select>
-        <p className="mt-1.5 text-xs text-gray-400">
-          Selecting a job will auto-fill its JD and resume text below. You can still edit them.
-        </p>
+        <JobSelector
+          jobs={jobs}
+          selectedJobId={selectedJobId}
+          onSelect={handleJobSelect}
+          onClear={handleClearJob}
+          placeholder="Search jobs by title or company..."
+          label={t("Select a Job (optional)")}
+          hint="Selecting a job will auto-fill its JD and resume text below. You can still edit them."
+        />
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">

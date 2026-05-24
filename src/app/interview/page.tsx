@@ -5,6 +5,8 @@ import { useStore } from "@/lib/store";
 import { hasApiKey, getSettings, getLanguage } from "@/lib/settingsStore";
 import type { GeneratedQuestion, InterviewFeedback, QuestionType } from "@/types/interview";
 import { useT } from "@/lib/i18n";
+import JobSelector from "@/components/jobs/JobSelector";
+import type { Job } from "@/types";
 import {
   Loader2,
   Sparkles,
@@ -185,86 +187,78 @@ export default function InterviewPage() {
 
       {/* Job Selector */}
       <div className="bg-white rounded-xl border border-gray-100 p-5">
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          {t("Select a Job")}
-        </label>
-        <select
-          value={selectedJobId}
-          onChange={(e) => handleJobSelect(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-300"
-        >
-          <option value="">— Choose a job —</option>
-          {jobs.map((job) => (
-            <option key={job.id} value={job.id}>
-              {job.company} — {job.position}
-            </option>
-          ))}
-        </select>
-
-        {selectedJob && (
-          <div className="mt-3 bg-primary-50 border border-primary-100 rounded-lg p-4">
-            <div className="flex items-start justify-between">
-              <div className="grid sm:grid-cols-2 gap-3 text-sm">
-                <div className="flex items-center gap-2">
-                  <Briefcase size={14} className="text-primary-500 shrink-0" />
-                  <span className="font-medium text-gray-900">{selectedJob.position}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <MapPin size={14} className="text-gray-400 shrink-0" />
-                  <span className="text-gray-600">{selectedJob.company}</span>
-                </div>
-                {selectedJob.atsScore != null && (
+        <JobSelector
+          jobs={jobs}
+          selectedJobId={selectedJobId}
+          onSelect={handleJobSelect}
+          onClear={handleClearJob}
+          placeholder="Search jobs by title or company..."
+          label={t("Select a Job")}
+          renderSelectedJob={(job: Job, onClear: () => void) => (
+            <div className="bg-primary-50 border border-primary-100 rounded-lg p-4">
+              <div className="flex items-start justify-between">
+                <div className="grid sm:grid-cols-2 gap-3 text-sm">
                   <div className="flex items-center gap-2">
-                    <Target size={14} className="text-gray-400 shrink-0" />
-                    <span className="text-gray-600">
-                      ATS Score:{" "}
-                      <span
-                        className={
-                          selectedJob.atsScore >= 80
-                            ? "text-green-600 font-medium"
-                            : selectedJob.atsScore >= 60
-                              ? "text-amber-600 font-medium"
-                              : "text-red-600 font-medium"
-                        }
-                      >
-                        {selectedJob.atsScore}/100
-                      </span>
-                    </span>
+                    <Briefcase size={14} className="text-primary-500 shrink-0" />
+                    <span className="font-medium text-gray-900">{job.position}</span>
                   </div>
-                )}
-                {selectedJob.missingKeywords.length > 0 && (
-                  <div className="sm:col-span-2 flex flex-wrap items-center gap-1.5">
-                    <span className="text-xs text-gray-500">Missing Keywords:</span>
-                    {selectedJob.missingKeywords.slice(0, 6).map((kw) => (
-                      <span
-                        key={kw}
-                        className="inline-block px-2 py-0.5 rounded-full bg-red-50 text-red-600 text-xs"
-                      >
-                        {kw}
-                      </span>
-                    ))}
-                    {selectedJob.missingKeywords.length > 6 && (
-                      <span className="text-xs text-gray-400">
-                        +{selectedJob.missingKeywords.length - 6} more
-                      </span>
-                    )}
+                  <div className="flex items-center gap-2">
+                    <MapPin size={14} className="text-gray-400 shrink-0" />
+                    <span className="text-gray-600">{job.company}</span>
                   </div>
-                )}
+                  {job.atsScore != null && (
+                    <div className="flex items-center gap-2">
+                      <Target size={14} className="text-gray-400 shrink-0" />
+                      <span className="text-gray-600">
+                        ATS Score:{" "}
+                        <span
+                          className={
+                            job.atsScore >= 80
+                              ? "text-green-600 font-medium"
+                              : job.atsScore >= 60
+                                ? "text-amber-600 font-medium"
+                                : "text-red-600 font-medium"
+                          }
+                        >
+                          {job.atsScore}/100
+                        </span>
+                      </span>
+                    </div>
+                  )}
+                  {job.missingKeywords.length > 0 && (
+                    <div className="sm:col-span-2 flex flex-wrap items-center gap-1.5">
+                      <span className="text-xs text-gray-500">Missing Keywords:</span>
+                      {job.missingKeywords.slice(0, 6).map((kw) => (
+                        <span
+                          key={kw}
+                          className="inline-block px-2 py-0.5 rounded-full bg-red-50 text-red-600 text-xs"
+                        >
+                          {kw}
+                        </span>
+                      ))}
+                      {job.missingKeywords.length > 6 && (
+                        <span className="text-xs text-gray-400">
+                          +{job.missingKeywords.length - 6} more
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={onClear}
+                  className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"
+                >
+                  <X size={16} />
+                </button>
               </div>
-              <button
-                onClick={handleClearJob}
-                className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"
-              >
-                <X size={16} />
-              </button>
+              {job.jobDescription && (
+                <p className="mt-2 text-xs text-gray-400 line-clamp-2">
+                  JD: {job.jobDescription}
+                </p>
+              )}
             </div>
-            {selectedJob.jobDescription && (
-              <p className="mt-2 text-xs text-gray-400 line-clamp-2">
-                JD: {selectedJob.jobDescription}
-              </p>
-            )}
-          </div>
-        )}
+          )}
+        />
       </div>
 
       {/* Generate Questions */}
