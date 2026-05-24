@@ -21,6 +21,7 @@ export interface Job {
   atsScore: number | null;
   matchedKeywords: string[];
   missingKeywords: string[];
+  matchExplanations?: Record<string, string>;
   interviewStage: string;
   customStage: string;
   notes: string;

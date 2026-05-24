@@ -118,6 +118,7 @@ Provide 4-6 specific, actionable suggestions in the "suggestions" array.`;
       atsScore: match.atsScore,
       matchedKeywords: match.matchedKeywords,
       missingKeywords: match.missingKeywords,
+      matchExplanations: match.matchExplanations,
       suggestions: cached.suggestions,
       createdAt: new Date().toISOString().split("T")[0],
     });

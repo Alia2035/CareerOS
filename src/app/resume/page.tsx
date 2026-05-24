@@ -91,6 +91,7 @@ function ResumeAnalyzer() {
           atsScore: data.atsScore,
           matchedKeywords: data.matchedKeywords,
           missingKeywords: data.missingKeywords,
+          matchExplanations: data.matchExplanations || {},
         });
         setSavedToJobId(selectedJobId);
       }
@@ -269,11 +270,18 @@ function ResumeAnalyzer() {
                 {t("Matched Keywords")}
               </h3>
               <div className="flex flex-wrap gap-1.5">
-                {result.matchedKeywords.map((kw) => (
-                  <span key={kw} className="px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium">
-                    {kw}
-                  </span>
-                ))}
+                {result.matchedKeywords.map((kw) => {
+                  const expl = result.matchExplanations?.[kw];
+                  return (
+                    <span
+                      key={kw}
+                      title={expl || kw}
+                      className={`px-2.5 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium ${expl && expl !== ("exact: \"" + kw + "\"") ? "cursor-help border border-green-200" : ""}`}
+                    >
+                      {kw}
+                    </span>
+                  );
+                })}
               </div>
             </div>
             <div className="bg-white rounded-xl border border-gray-100 p-5">

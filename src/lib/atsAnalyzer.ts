@@ -12,44 +12,38 @@ export interface ResumeExtraction {
   experience: string[];
 }
 
-function norm(k: string): string {
-  return k.toLowerCase().trim().replace(/\s+/g, " ");
-}
-
-/**
- * Deterministic matching between AI-extracted structured data.
- * Same input → same output, guaranteed.
- */
-export function computeMatch(jd: JDExtraction, resume: ResumeExtraction): {
+export interface MatchOutput {
   atsScore: number;
   matchedKeywords: string[];
   missingKeywords: string[];
-} {
+  matchExplanations: Record<string, string>;
+}
+
+import { matchKeywords, normalizeKeyword } from "@/lib/keywordMatcher";
+
+/**
+ * Deterministic matching between AI-extracted structured data.
+ * Uses synonym expansion, fuzzy matching, and Chinese substring
+ * matching for intelligent keyword comparison.
+ */
+export function computeMatch(jd: JDExtraction, resume: ResumeExtraction): MatchOutput {
   const jdAll = [
-    ...jd.skills.map(norm),
-    ...jd.tools.map(norm),
-    ...jd.requirements.map(norm),
+    ...jd.skills,
+    ...jd.tools,
+    ...jd.requirements,
   ];
-  const resumeSet = new Set([
-    ...resume.skills.map(norm),
-    ...resume.tools.map(norm),
-    ...resume.experience.map(norm),
-  ]);
+  const resumeAll = [
+    ...resume.skills,
+    ...resume.tools,
+    ...resume.experience,
+  ];
 
-  const matched: string[] = [];
-  const missing: string[] = [];
+  const result = matchKeywords(jdAll, resumeAll);
 
-  for (const kw of jdAll) {
-    if (resumeSet.has(kw)) {
-      matched.push(kw);
-    } else {
-      missing.push(kw);
-    }
-  }
-
-  const atsScore = jdAll.length > 0
-    ? Math.round((matched.length / jdAll.length) * 100)
-    : 0;
-
-  return { atsScore, matchedKeywords: matched, missingKeywords: missing };
+  return {
+    atsScore: result.atsScore,
+    matchedKeywords: result.matchedKeywords,
+    missingKeywords: result.missingKeywords,
+    matchExplanations: result.matchExplanations,
+  };
 }

@@ -8,6 +8,7 @@ export interface ResumeAnalysis {
   atsScore: number;
   matchedKeywords: string[];
   missingKeywords: string[];
+  matchExplanations?: Record<string, string>;
   suggestions: string[];
   createdAt: string;
 }
