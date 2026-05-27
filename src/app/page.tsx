@@ -4,8 +4,7 @@ import { useMemo } from "react";
 import { useStore, calcStats } from "@/lib/store";
 import StatCard from "@/components/dashboard/StatCard";
 import RecentApps from "@/components/dashboard/RecentApps";
-import FollowUpList from "@/components/dashboard/FollowUpList";
-import UpcomingInterviews from "@/components/dashboard/UpcomingInterviews";
+import UpcomingTimeline from "@/components/dashboard/UpcomingTimeline";
 import { Briefcase, Send, Users, Trophy, XCircle } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
@@ -42,12 +41,9 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <UpcomingInterviews />
+      <UpcomingTimeline />
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        <RecentApps />
-        <FollowUpList />
-      </div>
+      <RecentApps />
     </div>
   );
 }
