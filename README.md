@@ -72,7 +72,6 @@ I think knowing what to *remove* — and why — says more than a long feature l
 
 ```bash
 git clone https://github.com/Alia2035/CareerOS.git
-cd CareerOS
 ```
 <!-- 待补充：根据你的实际项目填运行方式。
      - 若是纯静态 HTML：直接用浏览器打开 index.html，或用 VS Code 的 Live Server。
@@ -145,7 +144,6 @@ CareerOS 就是我对这个问题的回答。它从一个本地 HTML 页面起�
 
 ```bash
 git clone https://github.com/Alia2035/CareerOS.git
-cd CareerOS
 ```
 <!-- 待补充：按你的实际项目填运行方式。
      - 纯静态 HTML：直接浏览器打开 index.html，或用 VS Code 的 Live Server。
