@@ -157,6 +157,14 @@ const translations: TranslationMap = {
   "Select a Job": { en: "Select a Job", zh: "选择职位" },
   "Select a Job (optional)": { en: "Select a Job (optional)", zh: "选择职位（可选）" },
   "Results saved to job": { en: "Results saved to job", zh: "结果已保存至职位" },
+
+  // CV Selector
+  "Select saved CV": { en: "Select saved CV", zh: "选择已保存的简历" },
+  "Search CVs...": { en: "Search CVs...", zh: "搜索简历..." },
+  "None / Manual input": { en: "None / Manual input", zh: "无 / 手动输入" },
+  "No matching CVs": { en: "No matching CVs", zh: "无匹配的简历" },
+  "No saved CVs yet": { en: "No saved CVs yet", zh: "暂无已保存的简历" },
+  "Updated:": { en: "Updated:", zh: "更新于：" },
 };
 
 export function t(key: string, language?: Language): string {
