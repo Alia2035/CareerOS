@@ -8,7 +8,7 @@
 
 <!-- 提示：把本仓库根目录新建一个 screenshots 文件夹，并放入 dashboard.png / analytics.png / jobs.png 三张图（我已按这些文件名给你导出），下面的图片就能正常显示。视频录好后，把 ⬇️ 那个链接占位替换掉即可。 -->
 
-![CareerOS Dashboard](screenshots/dashboard.png)
+![CareerOS Dashboard](dashboard.png)
 
 ---
 
@@ -64,7 +64,7 @@ I think knowing what to *remove* — and why — says more than a long feature l
 
 | Dashboard | Analytics | Job Tracker |
 |---|---|---|
-| ![Dashboard](screenshots/dashboard.png) | ![Analytics](screenshots/analytics.png) | ![Job Tracker](screenshots/jobs.png) |
+| ![Dashboard](dashboard.png) | ![Analytics](analytics.png) | ![Job Tracker](jobs.png) |
 
 🎥 **Demo video:** <!-- 待补充：录好后把视频链接贴在这里，例如 YouTube / Bilibili 链接 -->
 
@@ -136,7 +136,7 @@ CareerOS 就是我对这个问题的回答。它从一个本地 HTML 页面起�
 
 | 仪表盘 | 数据分析 | 岗位追踪 |
 |---|---|---|
-| ![仪表盘](screenshots/dashboard.png) | ![数据分析](screenshots/analytics.png) | ![岗位追踪](screenshots/jobs.png) |
+| ![仪表盘](dashboard.png) | ![数据分析](analytics.png) | ![岗位追踪](jobs.png) |
 
 🎥 **演示视频：** <!-- 待补充：录好后把链接贴在这里，例如 B 站 / YouTube 链接 -->
 
